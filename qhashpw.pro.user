@@ -45,6 +45,7 @@
   <valuemap type="QVariantMap" >
    <value key="ProjectExplorer.BuildConfiguration.DisplayName" type="QString" >Debug</value>
    <value key="QtVersionId" type="int" >0</value>
+   <value key="addQDumper" type="" ></value>
    <value key="buildDirectory" type="QString" >/home/smueller/nfs/dev/qhashpw</value>
   </valuemap>
  </data>
@@ -53,6 +54,7 @@
   <valuemap type="QVariantMap" >
    <value key="ProjectExplorer.BuildConfiguration.DisplayName" type="QString" >Release</value>
    <value key="QtVersionId" type="int" >0</value>
+   <value key="addQDumper" type="" ></value>
   </valuemap>
  </data>
  <data>
@@ -61,7 +63,7 @@
    <value key="ProjectExplorer.BuildConfiguration.DisplayName" type="QString" >Debug</value>
    <valuelist key="abstractProcess.Environment" type="QVariantList" >
     <value type="QString" >COLORFGBG=15;0</value>
-    <value type="QString" >DBUS_SESSION_BUS_ADDRESS=unix:abstract=/tmp/dbus-CdtHqW342d,guid=040d1ffca67fbc3e2628d78a4bd81abf</value>
+    <value type="QString" >DBUS_SESSION_BUS_ADDRESS=unix:abstract=/tmp/dbus-aDSRCttEbW,guid=2688b772c2277ef6fed0e9e44bd936e1</value>
     <value type="QString" >DESKTOP_SESSION=default</value>
     <value type="QString" >DESKTOP_STARTUP_ID=</value>
     <value type="QString" >DISPLAY=:0</value>
@@ -72,6 +74,7 @@
     <value type="QString" >GS_LIB=/home/smueller/.fonts</value>
     <value type="QString" >GTK2_RC_FILES=/etc/gtk-2.0/gtkrc:/home/smueller/.gtkrc-2.0:/home/smueller/.gtkrc-2.0-kde4:/home/smueller/.kde/share/config/gtkrc-2.0</value>
     <value type="QString" >GTK_RC_FILES=/etc/gtk/gtkrc:/home/smueller/.gtkrc::/home/smueller/.kde/share/config/gtkrc</value>
+    <value type="QString" >HISTCONTROL=ignorespace</value>
     <value type="QString" >HOME=/home/smueller</value>
     <value type="QString" >KDE_FULL_SESSION=true</value>
     <value type="QString" >KDE_MULTIHEAD=false</value>
@@ -83,24 +86,27 @@
     <value type="QString" >LANGUAGE=</value>
     <value type="QString" >LD_LIBRARY_PATH=/usr/lib/qtcreator:</value>
     <value type="QString" >LOGNAME=smueller</value>
+    <value type="QString" >MC_SID=4424</value>
+    <value type="QString" >MC_TMPDIR=/tmp/mc-smueller</value>
     <value type="QString" >MESA_NO_ASM=1</value>
+    <value type="QString" >OLDPWD=/home/smueller/svn/hashpw</value>
     <value type="QString" >PATH=/home/smueller/qtsdk-2009.02/qt/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games</value>
     <value type="QString" >PROFILEHOME=</value>
-    <value type="QString" >PWD=/home/smueller</value>
+    <value type="QString" >PWD=/home/smueller/nfs/dev/qhashpw</value>
     <value type="QString" >QTDIR=/home/smueller/qtsdk-2009.02/qt</value>
     <value type="QString" >QT_PLUGIN_PATH=/home/smueller/.kde/lib/kde4/plugins/:/usr/lib/kde4/plugins/</value>
-    <value type="QString" >SESSION_MANAGER=local/goedel:@/tmp/.ICE-unix/2082,unix/goedel:/tmp/.ICE-unix/2082</value>
+    <value type="QString" >SESSION_MANAGER=local/goedel:@/tmp/.ICE-unix/2104,unix/goedel:/tmp/.ICE-unix/2104</value>
     <value type="QString" >SHELL=/bin/bash</value>
-    <value type="QString" >SHLVL=1</value>
-    <value type="QString" >SSH_AGENT_PID=1996</value>
-    <value type="QString" >SSH_AUTH_SOCK=/tmp/ssh-PXoCdu1951/agent.1951</value>
+    <value type="QString" >SHLVL=2</value>
+    <value type="QString" >SSH_AGENT_PID=2018</value>
+    <value type="QString" >SSH_AUTH_SOCK=/tmp/ssh-QuvaFG1973/agent.1973</value>
     <value type="QString" >TERM=xterm</value>
     <value type="QString" >USER=smueller</value>
-    <value type="QString" >WINDOWID=37751235</value>
+    <value type="QString" >WINDOWID=10488259</value>
     <value type="QString" >WINDOWPATH=7</value>
     <value type="QString" >XCURSOR_THEME=oxy-white</value>
     <value type="QString" >XDG_DATA_DIRS=/usr/share:/usr/share:/usr/local/share</value>
-    <value type="QString" >XDG_SESSION_COOKIE=f7c2c7f005c90335907a4c6249c79748-1272453822.925187-786749481</value>
+    <value type="QString" >XDG_SESSION_COOKIE=f7c2c7f005c90335907a4c6249c79748-1272526561.43316-1467513122</value>
     <value type="QString" >XDM_MANAGED=method=classic</value>
     <value type="QString" >_=/usr/bin/qtcreator</value>
    </valuelist>
@@ -112,7 +118,7 @@
     <value type="QString" >CONFIG+=debug</value>
    </valuelist>
    <value key="abstractProcess.command" type="QString" >/home/smueller/qtsdk-2009.02/qt/bin/qmake</value>
-   <value key="abstractProcess.enabled" type="bool" >false</value>
+   <value key="abstractProcess.enabled" type="bool" >true</value>
    <value key="abstractProcess.workingDirectory" type="QString" >/home/smueller/nfs/dev/qhashpw</value>
    <value key="buildConfiguration" type="int" >2</value>
   </valuemap>
@@ -123,7 +129,7 @@
    <value key="ProjectExplorer.BuildConfiguration.DisplayName" type="QString" >Debug</value>
    <valuelist key="abstractProcess.Environment" type="QVariantList" >
     <value type="QString" >COLORFGBG=15;0</value>
-    <value type="QString" >DBUS_SESSION_BUS_ADDRESS=unix:abstract=/tmp/dbus-CdtHqW342d,guid=040d1ffca67fbc3e2628d78a4bd81abf</value>
+    <value type="QString" >DBUS_SESSION_BUS_ADDRESS=unix:abstract=/tmp/dbus-aDSRCttEbW,guid=2688b772c2277ef6fed0e9e44bd936e1</value>
     <value type="QString" >DESKTOP_SESSION=default</value>
     <value type="QString" >DESKTOP_STARTUP_ID=</value>
     <value type="QString" >DISPLAY=:0</value>
@@ -134,6 +140,7 @@
     <value type="QString" >GS_LIB=/home/smueller/.fonts</value>
     <value type="QString" >GTK2_RC_FILES=/etc/gtk-2.0/gtkrc:/home/smueller/.gtkrc-2.0:/home/smueller/.gtkrc-2.0-kde4:/home/smueller/.kde/share/config/gtkrc-2.0</value>
     <value type="QString" >GTK_RC_FILES=/etc/gtk/gtkrc:/home/smueller/.gtkrc::/home/smueller/.kde/share/config/gtkrc</value>
+    <value type="QString" >HISTCONTROL=ignorespace</value>
     <value type="QString" >HOME=/home/smueller</value>
     <value type="QString" >KDE_FULL_SESSION=true</value>
     <value type="QString" >KDE_MULTIHEAD=false</value>
@@ -145,24 +152,27 @@
     <value type="QString" >LANGUAGE=</value>
     <value type="QString" >LD_LIBRARY_PATH=/usr/lib/qtcreator:</value>
     <value type="QString" >LOGNAME=smueller</value>
+    <value type="QString" >MC_SID=4424</value>
+    <value type="QString" >MC_TMPDIR=/tmp/mc-smueller</value>
     <value type="QString" >MESA_NO_ASM=1</value>
+    <value type="QString" >OLDPWD=/home/smueller/svn/hashpw</value>
     <value type="QString" >PATH=/home/smueller/qtsdk-2009.02/qt/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games</value>
     <value type="QString" >PROFILEHOME=</value>
-    <value type="QString" >PWD=/home/smueller</value>
+    <value type="QString" >PWD=/home/smueller/nfs/dev/qhashpw</value>
     <value type="QString" >QTDIR=/home/smueller/qtsdk-2009.02/qt</value>
     <value type="QString" >QT_PLUGIN_PATH=/home/smueller/.kde/lib/kde4/plugins/:/usr/lib/kde4/plugins/</value>
-    <value type="QString" >SESSION_MANAGER=local/goedel:@/tmp/.ICE-unix/2082,unix/goedel:/tmp/.ICE-unix/2082</value>
+    <value type="QString" >SESSION_MANAGER=local/goedel:@/tmp/.ICE-unix/2104,unix/goedel:/tmp/.ICE-unix/2104</value>
     <value type="QString" >SHELL=/bin/bash</value>
-    <value type="QString" >SHLVL=1</value>
-    <value type="QString" >SSH_AGENT_PID=1996</value>
-    <value type="QString" >SSH_AUTH_SOCK=/tmp/ssh-PXoCdu1951/agent.1951</value>
+    <value type="QString" >SHLVL=2</value>
+    <value type="QString" >SSH_AGENT_PID=2018</value>
+    <value type="QString" >SSH_AUTH_SOCK=/tmp/ssh-QuvaFG1973/agent.1973</value>
     <value type="QString" >TERM=xterm</value>
     <value type="QString" >USER=smueller</value>
-    <value type="QString" >WINDOWID=37751235</value>
+    <value type="QString" >WINDOWID=10488259</value>
     <value type="QString" >WINDOWPATH=7</value>
     <value type="QString" >XCURSOR_THEME=oxy-white</value>
     <value type="QString" >XDG_DATA_DIRS=/usr/share:/usr/share:/usr/local/share</value>
-    <value type="QString" >XDG_SESSION_COOKIE=f7c2c7f005c90335907a4c6249c79748-1272453822.925187-786749481</value>
+    <value type="QString" >XDG_SESSION_COOKIE=f7c2c7f005c90335907a4c6249c79748-1272526561.43316-1467513122</value>
     <value type="QString" >XDM_MANAGED=method=classic</value>
     <value type="QString" >_=/usr/bin/qtcreator</value>
    </valuelist>

@@ -5,7 +5,12 @@ TARGET = qhashpw
 TEMPLATE = app
 SOURCES += main.cpp \
     mainwindow.cpp \
-    tokenizer.cpp
+    tokenizer.cpp \
+    account.cpp \
+    hashpw.c
 HEADERS += mainwindow.h \
-    tokenizer.h
+    tokenizer.h \
+    account.h \
+    hashpw.h
 FORMS += 
+LIBS += -lssl

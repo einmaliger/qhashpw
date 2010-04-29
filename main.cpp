@@ -1,5 +1,6 @@
 #include <QtCore>
 #include <QtGui/QApplication>
+#include "account.h"
 #include "mainwindow.h"
 #include "tokenizer.h"
 
@@ -15,9 +16,20 @@ int main(int argc, char *argv[])
     if(t->error() != Tokenizer::NO_ERROR)
         w.addInfo(QObject::tr("There was an error opening the file"));
 
-    do {
-        w.addInfo(t->currentTokenDesc());
-    } while(t->next());
+    Account defAccount;
+
+    bool tryOneMore = defAccount.readFrom(t);
+
+    w.addInfo(defAccount.errorMsg());
+
+    QList<Account> all;
+    while(tryOneMore)
+    {
+        Account a;
+        tryOneMore = a.readFrom(t);
+        w.addInfo(a.errorMsg());
+        all.append(a);
+    }
 
     return a.exec();
 }
