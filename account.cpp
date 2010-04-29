@@ -76,9 +76,6 @@ bool Account::readFrom(Tokenizer *t)
         else if(t->tokT() == Tokenizer::TT_STRING && var[i].sval)
         {
             // String assignment
-            raiseWarning(t,tr("DEBUG: String assignment %1 := \"%2\"")
-                         .arg(key)
-                         .arg(*t->tok.s));
             if(key == "flag")
             {
                 if(flags_ != INVALID_INT_FIELD)
@@ -99,9 +96,6 @@ bool Account::readFrom(Tokenizer *t)
          else if(t->tokT() == Tokenizer::TT_NUMBER && var[i].ival)
         {
             // number assignment
-            raiseWarning(t,tr("DEBUG: Number assignment %1 := \"%2\"")
-                         .arg(key)
-                         .arg(t->tok.i));
             if(*var[i].ival != INVALID_INT_FIELD)
             {
 errorDoubleAssign:
@@ -136,7 +130,7 @@ void Account::fillAccount(const Account &defaultAccount)
 {
     if(user_.isNull()) user_ = defaultAccount.user_;
     if(site_.isNull()) site_ = defaultAccount.site_;
-    if(note_.isNull()) note_ = defaultAccount.note_;
+    // Do not inherit note
     if(flags_ == INVALID_INT_FIELD) flags_ = defaultAccount.flags_;
     if(min_ == INVALID_INT_FIELD) min_ = defaultAccount.min_;
     if(max_ == INVALID_INT_FIELD) max_ = defaultAccount.max_;

@@ -63,63 +63,61 @@
    <value key="ProjectExplorer.BuildConfiguration.DisplayName" type="QString" >Debug</value>
    <valuelist key="abstractProcess.Environment" type="QVariantList" >
     <value type="QString" >COLORFGBG=15;0</value>
-    <value type="QString" >DBUS_SESSION_BUS_ADDRESS=unix:abstract=/tmp/dbus-aDSRCttEbW,guid=2688b772c2277ef6fed0e9e44bd936e1</value>
-    <value type="QString" >DESKTOP_SESSION=default</value>
+    <value type="QString" >DBUS_SESSION_BUS_ADDRESS=unix:abstract=/tmp/dbus-dO1TVmbGAu,guid=ee93d62ffc9a944821d1259d4bd9bcc4</value>
+    <value type="QString" >DESKTOP_SESSION=kde</value>
     <value type="QString" >DESKTOP_STARTUP_ID=</value>
     <value type="QString" >DISPLAY=:0</value>
     <value type="QString" >DM_CONTROL=/var/run/xdmctl</value>
-    <value type="QString" >DSM_CONFIG=/etc/adsm/dsm.opt</value>
-    <value type="QString" >DSM_DIR=/opt/tivoli/tsm/client/ba/bin</value>
-    <value type="QString" >DSM_LOG=/var/log/itsm</value>
-    <value type="QString" >GS_LIB=/home/smueller/.fonts</value>
-    <value type="QString" >GTK2_RC_FILES=/etc/gtk-2.0/gtkrc:/home/smueller/.gtkrc-2.0:/home/smueller/.gtkrc-2.0-kde4:/home/smueller/.kde/share/config/gtkrc-2.0</value>
-    <value type="QString" >GTK_RC_FILES=/etc/gtk/gtkrc:/home/smueller/.gtkrc::/home/smueller/.kde/share/config/gtkrc</value>
-    <value type="QString" >HISTCONTROL=ignorespace</value>
-    <value type="QString" >HOME=/home/smueller</value>
+    <value type="QString" >GPG_AGENT_INFO=/tmp/gpg-7cAaut/S.gpg-agent:2348:1</value>
+    <value type="QString" >GS_LIB=/home/sascha/.fonts</value>
+    <value type="QString" >GTK2_RC_FILES=/etc/gtk-2.0/gtkrc:/home/sascha/.gtkrc-2.0:/home/sascha/.gtkrc-2.0-kde4:/home/sascha/.kde/share/config/gtkrc-2.0</value>
+    <value type="QString" >GTK_RC_FILES=/etc/gtk/gtkrc:/home/sascha/.gtkrc::/home/sascha/.kde/share/config/gtkrc</value>
+    <value type="QString" >HISTCONTROL=ignoreboth</value>
+    <value type="QString" >HOME=/home/sascha</value>
     <value type="QString" >KDE_FULL_SESSION=true</value>
     <value type="QString" >KDE_MULTIHEAD=false</value>
     <value type="QString" >KDE_SESSION_UID=1000</value>
     <value type="QString" >KDE_SESSION_VERSION=4</value>
-    <value type="QString" >KONSOLE_DBUS_SERVICE=:1.27</value>
-    <value type="QString" >KONSOLE_DBUS_SESSION=/Sessions/3</value>
+    <value type="QString" >KONSOLE_DBUS_SERVICE=:1.33</value>
+    <value type="QString" >KONSOLE_DBUS_SESSION=/Sessions/2</value>
     <value type="QString" >LANG=de_DE.UTF-8</value>
     <value type="QString" >LANGUAGE=</value>
     <value type="QString" >LD_LIBRARY_PATH=/usr/lib/qtcreator:</value>
-    <value type="QString" >LOGNAME=smueller</value>
-    <value type="QString" >MC_SID=4424</value>
-    <value type="QString" >MC_TMPDIR=/tmp/mc-smueller</value>
-    <value type="QString" >MESA_NO_ASM=1</value>
-    <value type="QString" >OLDPWD=/home/smueller/svn/hashpw</value>
-    <value type="QString" >PATH=/home/smueller/qtsdk-2009.02/qt/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games</value>
+    <value type="QString" >LESSCLOSE=/usr/bin/lesspipe %s %s</value>
+    <value type="QString" >LESSOPEN=| /usr/bin/lesspipe %s</value>
+    <value type="QString" >LOGNAME=sascha</value>
+    <value type="QString" >LS_COLORS=rs=0:di=01;34:ln=01;36:hl=44;37:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arj=01;31:*.taz=01;31:*.lzh=01;31:*.lzma=01;31:*.zip=01;31:*.z=01;31:*.Z=01;31:*.dz=01;31:*.gz=01;31:*.bz2=01;31:*.bz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.rar=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.jpg=01;35:*.jpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.axv=01;35:*.anx=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.axa=00;36:*.oga=00;36:*.spx=00;36:*.xspf=00;36:</value>
+    <value type="QString" >OLDPWD=/home/sascha/dev</value>
+    <value type="QString" >PATH=/usr/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games</value>
     <value type="QString" >PROFILEHOME=</value>
-    <value type="QString" >PWD=/home/smueller/nfs/dev/qhashpw</value>
-    <value type="QString" >QTDIR=/home/smueller/qtsdk-2009.02/qt</value>
-    <value type="QString" >QT_PLUGIN_PATH=/home/smueller/.kde/lib/kde4/plugins/:/usr/lib/kde4/plugins/</value>
-    <value type="QString" >SESSION_MANAGER=local/goedel:@/tmp/.ICE-unix/2104,unix/goedel:/tmp/.ICE-unix/2104</value>
+    <value type="QString" >PWD=/home/sascha/dev/qhashpw</value>
+    <value type="QString" >QTDIR=/usr</value>
+    <value type="QString" >QT_PLUGIN_PATH=/home/sascha/.kde/lib/kde4/plugins/:/usr/lib/kde4/plugins/</value>
+    <value type="QString" >SESSION_MANAGER=local/sascha-desktop:@/tmp/.ICE-unix/2442,unix/sascha-desktop:/tmp/.ICE-unix/2442</value>
     <value type="QString" >SHELL=/bin/bash</value>
-    <value type="QString" >SHLVL=2</value>
-    <value type="QString" >SSH_AGENT_PID=2018</value>
-    <value type="QString" >SSH_AUTH_SOCK=/tmp/ssh-QuvaFG1973/agent.1973</value>
+    <value type="QString" >SHLVL=1</value>
+    <value type="QString" >SSH_AGENT_PID=2347</value>
+    <value type="QString" >SSH_AUTH_SOCK=/tmp/ssh-TjGGaK2300/agent.2300</value>
     <value type="QString" >TERM=xterm</value>
-    <value type="QString" >USER=smueller</value>
-    <value type="QString" >WINDOWID=10488259</value>
+    <value type="QString" >USER=sascha</value>
+    <value type="QString" >WINDOWID=44040217</value>
     <value type="QString" >WINDOWPATH=7</value>
     <value type="QString" >XCURSOR_THEME=oxy-white</value>
     <value type="QString" >XDG_DATA_DIRS=/usr/share:/usr/share:/usr/local/share</value>
-    <value type="QString" >XDG_SESSION_COOKIE=f7c2c7f005c90335907a4c6249c79748-1272526561.43316-1467513122</value>
+    <value type="QString" >XDG_SESSION_COOKIE=ec4feebb4c070f33241dae96494174bf-1272560836.319615-730697900</value>
     <value type="QString" >XDM_MANAGED=method=classic</value>
     <value type="QString" >_=/usr/bin/qtcreator</value>
    </valuelist>
    <valuelist key="abstractProcess.arguments" type="QVariantList" >
-    <value type="QString" >/home/smueller/nfs/dev/qhashpw/qhashpw.pro</value>
+    <value type="QString" >/home/sascha/dev/qhashpw/qhashpw.pro</value>
     <value type="QString" >-spec</value>
-    <value type="QString" >linux-g++-64</value>
+    <value type="QString" >/usr/share/qt4/mkspecs/linux-g++</value>
     <value type="QString" >-r</value>
     <value type="QString" >CONFIG+=debug</value>
    </valuelist>
-   <value key="abstractProcess.command" type="QString" >/home/smueller/qtsdk-2009.02/qt/bin/qmake</value>
-   <value key="abstractProcess.enabled" type="bool" >true</value>
-   <value key="abstractProcess.workingDirectory" type="QString" >/home/smueller/nfs/dev/qhashpw</value>
+   <value key="abstractProcess.command" type="QString" >/usr/bin/qmake-qt4</value>
+   <value key="abstractProcess.enabled" type="bool" >false</value>
+   <value key="abstractProcess.workingDirectory" type="QString" >/home/sascha/dev/qhashpw</value>
    <value key="buildConfiguration" type="int" >2</value>
   </valuemap>
  </data>
@@ -129,50 +127,48 @@
    <value key="ProjectExplorer.BuildConfiguration.DisplayName" type="QString" >Debug</value>
    <valuelist key="abstractProcess.Environment" type="QVariantList" >
     <value type="QString" >COLORFGBG=15;0</value>
-    <value type="QString" >DBUS_SESSION_BUS_ADDRESS=unix:abstract=/tmp/dbus-aDSRCttEbW,guid=2688b772c2277ef6fed0e9e44bd936e1</value>
-    <value type="QString" >DESKTOP_SESSION=default</value>
+    <value type="QString" >DBUS_SESSION_BUS_ADDRESS=unix:abstract=/tmp/dbus-dO1TVmbGAu,guid=ee93d62ffc9a944821d1259d4bd9bcc4</value>
+    <value type="QString" >DESKTOP_SESSION=kde</value>
     <value type="QString" >DESKTOP_STARTUP_ID=</value>
     <value type="QString" >DISPLAY=:0</value>
     <value type="QString" >DM_CONTROL=/var/run/xdmctl</value>
-    <value type="QString" >DSM_CONFIG=/etc/adsm/dsm.opt</value>
-    <value type="QString" >DSM_DIR=/opt/tivoli/tsm/client/ba/bin</value>
-    <value type="QString" >DSM_LOG=/var/log/itsm</value>
-    <value type="QString" >GS_LIB=/home/smueller/.fonts</value>
-    <value type="QString" >GTK2_RC_FILES=/etc/gtk-2.0/gtkrc:/home/smueller/.gtkrc-2.0:/home/smueller/.gtkrc-2.0-kde4:/home/smueller/.kde/share/config/gtkrc-2.0</value>
-    <value type="QString" >GTK_RC_FILES=/etc/gtk/gtkrc:/home/smueller/.gtkrc::/home/smueller/.kde/share/config/gtkrc</value>
-    <value type="QString" >HISTCONTROL=ignorespace</value>
-    <value type="QString" >HOME=/home/smueller</value>
+    <value type="QString" >GPG_AGENT_INFO=/tmp/gpg-7cAaut/S.gpg-agent:2348:1</value>
+    <value type="QString" >GS_LIB=/home/sascha/.fonts</value>
+    <value type="QString" >GTK2_RC_FILES=/etc/gtk-2.0/gtkrc:/home/sascha/.gtkrc-2.0:/home/sascha/.gtkrc-2.0-kde4:/home/sascha/.kde/share/config/gtkrc-2.0</value>
+    <value type="QString" >GTK_RC_FILES=/etc/gtk/gtkrc:/home/sascha/.gtkrc::/home/sascha/.kde/share/config/gtkrc</value>
+    <value type="QString" >HISTCONTROL=ignoreboth</value>
+    <value type="QString" >HOME=/home/sascha</value>
     <value type="QString" >KDE_FULL_SESSION=true</value>
     <value type="QString" >KDE_MULTIHEAD=false</value>
     <value type="QString" >KDE_SESSION_UID=1000</value>
     <value type="QString" >KDE_SESSION_VERSION=4</value>
-    <value type="QString" >KONSOLE_DBUS_SERVICE=:1.27</value>
-    <value type="QString" >KONSOLE_DBUS_SESSION=/Sessions/3</value>
+    <value type="QString" >KONSOLE_DBUS_SERVICE=:1.33</value>
+    <value type="QString" >KONSOLE_DBUS_SESSION=/Sessions/2</value>
     <value type="QString" >LANG=de_DE.UTF-8</value>
     <value type="QString" >LANGUAGE=</value>
     <value type="QString" >LD_LIBRARY_PATH=/usr/lib/qtcreator:</value>
-    <value type="QString" >LOGNAME=smueller</value>
-    <value type="QString" >MC_SID=4424</value>
-    <value type="QString" >MC_TMPDIR=/tmp/mc-smueller</value>
-    <value type="QString" >MESA_NO_ASM=1</value>
-    <value type="QString" >OLDPWD=/home/smueller/svn/hashpw</value>
-    <value type="QString" >PATH=/home/smueller/qtsdk-2009.02/qt/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games</value>
+    <value type="QString" >LESSCLOSE=/usr/bin/lesspipe %s %s</value>
+    <value type="QString" >LESSOPEN=| /usr/bin/lesspipe %s</value>
+    <value type="QString" >LOGNAME=sascha</value>
+    <value type="QString" >LS_COLORS=rs=0:di=01;34:ln=01;36:hl=44;37:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arj=01;31:*.taz=01;31:*.lzh=01;31:*.lzma=01;31:*.zip=01;31:*.z=01;31:*.Z=01;31:*.dz=01;31:*.gz=01;31:*.bz2=01;31:*.bz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.rar=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.jpg=01;35:*.jpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.axv=01;35:*.anx=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.axa=00;36:*.oga=00;36:*.spx=00;36:*.xspf=00;36:</value>
+    <value type="QString" >OLDPWD=/home/sascha/dev</value>
+    <value type="QString" >PATH=/usr/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games</value>
     <value type="QString" >PROFILEHOME=</value>
-    <value type="QString" >PWD=/home/smueller/nfs/dev/qhashpw</value>
-    <value type="QString" >QTDIR=/home/smueller/qtsdk-2009.02/qt</value>
-    <value type="QString" >QT_PLUGIN_PATH=/home/smueller/.kde/lib/kde4/plugins/:/usr/lib/kde4/plugins/</value>
-    <value type="QString" >SESSION_MANAGER=local/goedel:@/tmp/.ICE-unix/2104,unix/goedel:/tmp/.ICE-unix/2104</value>
+    <value type="QString" >PWD=/home/sascha/dev/qhashpw</value>
+    <value type="QString" >QTDIR=/usr</value>
+    <value type="QString" >QT_PLUGIN_PATH=/home/sascha/.kde/lib/kde4/plugins/:/usr/lib/kde4/plugins/</value>
+    <value type="QString" >SESSION_MANAGER=local/sascha-desktop:@/tmp/.ICE-unix/2442,unix/sascha-desktop:/tmp/.ICE-unix/2442</value>
     <value type="QString" >SHELL=/bin/bash</value>
-    <value type="QString" >SHLVL=2</value>
-    <value type="QString" >SSH_AGENT_PID=2018</value>
-    <value type="QString" >SSH_AUTH_SOCK=/tmp/ssh-QuvaFG1973/agent.1973</value>
+    <value type="QString" >SHLVL=1</value>
+    <value type="QString" >SSH_AGENT_PID=2347</value>
+    <value type="QString" >SSH_AUTH_SOCK=/tmp/ssh-TjGGaK2300/agent.2300</value>
     <value type="QString" >TERM=xterm</value>
-    <value type="QString" >USER=smueller</value>
-    <value type="QString" >WINDOWID=10488259</value>
+    <value type="QString" >USER=sascha</value>
+    <value type="QString" >WINDOWID=44040217</value>
     <value type="QString" >WINDOWPATH=7</value>
     <value type="QString" >XCURSOR_THEME=oxy-white</value>
     <value type="QString" >XDG_DATA_DIRS=/usr/share:/usr/share:/usr/local/share</value>
-    <value type="QString" >XDG_SESSION_COOKIE=f7c2c7f005c90335907a4c6249c79748-1272526561.43316-1467513122</value>
+    <value type="QString" >XDG_SESSION_COOKIE=ec4feebb4c070f33241dae96494174bf-1272560836.319615-730697900</value>
     <value type="QString" >XDM_MANAGED=method=classic</value>
     <value type="QString" >_=/usr/bin/qtcreator</value>
    </valuelist>
@@ -181,7 +177,7 @@
    </valuelist>
    <value key="abstractProcess.command" type="QString" >/usr/bin/make</value>
    <value key="abstractProcess.enabled" type="bool" >true</value>
-   <value key="abstractProcess.workingDirectory" type="QString" >/home/smueller/nfs/dev/qhashpw</value>
+   <value key="abstractProcess.workingDirectory" type="QString" >/home/sascha/dev/qhashpw</value>
   </valuemap>
  </data>
  <data>
