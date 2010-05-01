@@ -13,7 +13,7 @@ int main(int argc, char *argv[])
     f.open(QIODevice::ReadOnly);
     Tokenizer *t = new Tokenizer(&f);
     if(t->error() != Tokenizer::NO_ERROR)
-        QMessageBox(QMessageBox::Critical, QObject::tr("File error"), QObject::tr("The input file could not be opened"), QMessageBox::Ok);
+        QMessageBox(QMessageBox::Critical, QObject::tr("File error"), QObject::tr("The input file could not be opened"), QMessageBox::Ok).exec();
 
     Account defAccount;
 
@@ -33,10 +33,9 @@ int main(int argc, char *argv[])
         all.append(a);
     }
 
+    QMessageBox(QMessageBox::Information, QObject::tr("Load result"), s, QMessageBox::Ok).exec();
 
-    QMessageBox(QMessageBox::Information, QObject::tr("Load result"), s, QMessageBox::Ok);
-
-    MainWindow w(all);
+    MainWindow w(all, defAccount.note());
     w.show();
 
     return a.exec();
