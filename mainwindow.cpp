@@ -1,4 +1,5 @@
 #include <QtCore/QStringList>
+#include <QtCore/QTimer>
 #include <QtGui/QInputDialog>
 #include <QtGui/QMessageBox>
 #include <QtGui/QStatusBar>
@@ -15,6 +16,8 @@ MainWindow::MainWindow(QList<Account> &a, const QString &accessCode, QWidget *pa
     QStringList headers;
     headers << tr("Site") << tr("User") << tr("Password") << tr("Note");
     tab->setHorizontalHeaderLabels(headers);
+
+    connect(tab, SIGNAL(cellEntered(int,int)), SLOT(cellEntered(int,int)));
 
     all = a;
     filter();
@@ -34,6 +37,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::updateTable()
 {
+    currentlyVisiblePW = -1;
     tab->clearContents();
     tab->setRowCount(filtered.size());
 
@@ -62,6 +66,25 @@ void MainWindow::updateTable()
     }
 }
 
+void MainWindow::cellEntered(int row, int column)
+{
+    if(column != 2 || mainPW.isEmpty()) return;
+
+    hideVisiblePW();
+
+    Account *a = filtered[row];
+    char *pw = new char[a->max()+1];
+    QByteArray desc = (a->site()+a->user()).toLocal8Bit();
+    QByteArray mainPW = this->mainPW.toLocal8Bit();
+    getpw(mainPW.constData(), desc.constData(), a->num(), a->min(), a->max(), a->flags(), pw);
+
+    QTableWidgetItem *it = tab->item(row, 2);
+    it->setText(pw);
+    currentlyVisiblePW = row;
+    delete pw;
+    QTimer::singleShot(10000, this, SLOT(hideVisiblePW()));
+}
+
 void MainWindow::filter(const QString &phrase)
 {
     filtered.clear();
@@ -71,6 +94,20 @@ void MainWindow::filter(const QString &phrase)
             filtered.append(&all[i]);
     }
     updateTable();
+}
+
+void MainWindow::hideVisiblePW()
+{
+    if(currentlyVisiblePW == -1) return;
+
+    QTableWidgetItem *it = tab->item(currentlyVisiblePW, 2);
+
+    QString s;
+    for(int j = 0; j < filtered[currentlyVisiblePW]->max(); ++j)
+        s += "*";
+    it->setText(s);
+
+    currentlyVisiblePW = -1;
 }
 
 void MainWindow::lockToggled(int state)
@@ -95,6 +132,10 @@ void MainWindow::lockToggled(int state)
                     QMessageBox::Ok
                     ).exec();
             lock->setChecked(true);
+            return;
         }
+
+        mainPW = password;
     }
+    tab->setMouseTracking(!state);
 }

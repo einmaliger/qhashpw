@@ -19,7 +19,9 @@ public:
     void updateTable();
 
 private slots:
+    void cellEntered(int row, int column);
     void filter(const QString &phrase = "");
+    void hideVisiblePW();
     void lockToggled(int state);
 
 private:
@@ -29,6 +31,8 @@ private:
     QCheckBox *lock;
 
     QString accessCode;
+    QString mainPW;
+    int currentlyVisiblePW;     // row of password that is currently visible (or -1)
 };
 
 #endif // MAINWINDOW_H
