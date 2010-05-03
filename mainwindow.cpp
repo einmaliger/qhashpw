@@ -1,9 +1,11 @@
 #include <QtCore/QStringList>
 #include <QtCore/QTimer>
 #include <QtGui/QInputDialog>
+#include <QtGui/QLineEdit>
 #include <QtGui/QMessageBox>
 #include <QtGui/QStatusBar>
 #include <QtGui/QTableWidgetItem>
+#include <QtGui/QToolBar>
 
 #include "hashpw.h"
 #include "mainwindow.h"
@@ -13,9 +15,20 @@ MainWindow::MainWindow(QList<Account> &a, const QString &accessCode, QWidget *pa
 {
     tab = new QTableWidget(a.size(), 4);
 
+    QToolBar *searchBar = new QToolBar();
+
+    searchPhrase = new QLineEdit;
+    searchBar->addWidget(searchPhrase);
+    searchBar->addAction(tr("Filter"), this, SLOT(filter()));
+    connect(searchPhrase, SIGNAL(returnPressed()), SLOT(filter()));
+
+    this->addToolBar(Qt::TopToolBarArea, searchBar);
+
     QStringList headers;
     headers << tr("Site") << tr("User") << tr("Password") << tr("Note");
     tab->setHorizontalHeaderLabels(headers);
+    //tab->setSelectionBehavior(QAbstractItemView::SelectRows);
+    tab->setSelectionMode(QAbstractItemView::NoSelection);
 
     connect(tab, SIGNAL(cellEntered(int,int)), SLOT(cellEntered(int,int)));
 
@@ -85,12 +98,12 @@ void MainWindow::cellEntered(int row, int column)
     QTimer::singleShot(10000, this, SLOT(hideVisiblePW()));
 }
 
-void MainWindow::filter(const QString &phrase)
+void MainWindow::filter()
 {
     filtered.clear();
     for(int i = 0; i < all.size(); ++i)
     {
-        if(all[i].site().contains(phrase, Qt::CaseInsensitive))
+        if(all[i].site().contains(searchPhrase->text(), Qt::CaseInsensitive))
             filtered.append(&all[i]);
     }
     updateTable();
