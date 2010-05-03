@@ -8,6 +8,8 @@
 
 #include "account.h"
 
+class QLineEdit;
+
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -19,8 +21,10 @@ public:
     void updateTable();
 
 private slots:
+    void cellClicked(int row, int column);
     void cellEntered(int row, int column);
-    void filter(const QString &phrase = "");
+    void filter();
+    QString getPassword(const Account *a) const;
     void hideVisiblePW();
     void lockToggled(int state);
 
@@ -29,6 +33,7 @@ private:
     QList<Account> all;
     QList<Account*> filtered;
     QCheckBox *lock;
+    QLineEdit *searchPhrase;
 
     QString accessCode;
     QString mainPW;
