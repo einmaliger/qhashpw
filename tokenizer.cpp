@@ -125,7 +125,10 @@ bool Tokenizer::next()
 bool Tokenizer::forceCharToken(char c)
 {
     if(tokT_ == TT_CHAR && tok.c == c)
-        return next();
+    {
+        next();
+        return true;
+    }
     error_ = FORCE_CHAR_ERROR;
     return 0;
 }

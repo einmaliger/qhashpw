@@ -113,17 +113,7 @@ errorDoubleAssign:
             t->next();
     }
 
-    // Skip over the closing '}'
-    if(!t->forceCharToken('}'))
-    {
-        if(t->error() == Tokenizer::FORCE_CHAR_ERROR)
-            raiseError(t, tr("Closing '}' expected"));
-        else if(t->error() == Tokenizer::EOF_ERROR)
-            raiseTokenizerError(t);
-        return false;
-    }
-
-    return true;
+    return forceChar(t, '}', tr("Closing '}' expected"));
 }
 
 void Account::fillAccount(const Account &defaultAccount)

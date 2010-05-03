@@ -19,21 +19,22 @@ int main(int argc, char *argv[])
 
     QString s;
 
-    bool tryOneMore = defAccount.readFrom(t);
+    bool noError = defAccount.readFrom(t);
 
     s += defAccount.errorMsg();
 
     QList<Account> all;
-    while(tryOneMore)
+    while(noError)
     {
         Account a;
-        tryOneMore = a.readFrom(t);
+	if(t->error() == Tokenizer::EOF_ERROR) break;
+        noError = a.readFrom(t);
         a.fillAccount(defAccount);
         s += a.errorMsg();
         all.append(a);
     }
 
-    QMessageBox(QMessageBox::Information, QObject::tr("Load result"), s, QMessageBox::Ok).exec();
+    if(!noError) QMessageBox(QMessageBox::Information, QObject::tr("Load result"), s, QMessageBox::Ok).exec();
 
     MainWindow w(all, defAccount.note());
     w.show();
