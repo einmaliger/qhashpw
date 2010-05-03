@@ -21,8 +21,10 @@ public:
     void updateTable();
 
 private slots:
+    void cellClicked(int row, int column);
     void cellEntered(int row, int column);
     void filter();
+    QString getPassword(const Account *a) const;
     void hideVisiblePW();
     void lockToggled(int state);
 
