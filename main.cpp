@@ -1,7 +1,7 @@
 #include <QtCore>
 #include <QtGui/QApplication>
 #include <QtGui/QMessageBox>
-#include "account.h"
+#include "accountset.h"
 #include "mainwindow.h"
 #include "tokenizer.h"
 
@@ -15,28 +15,11 @@ int main(int argc, char *argv[])
     if(t->error() != Tokenizer::NO_ERROR)
         QMessageBox(QMessageBox::Critical, QObject::tr("File error"), QObject::tr("The input file could not be opened"), QMessageBox::Ok).exec();
 
-    Account defAccount;
+    AccountSet accounts;
 
-    QString s;
+    if(!accounts.readFrom(t)) QMessageBox(QMessageBox::Information, QObject::tr("Load result"), accounts.errorMsg(), QMessageBox::Ok).exec();
 
-    bool noError = defAccount.readFrom(t);
-
-    s += defAccount.errorMsg();
-
-    QList<Account> all;
-    while(noError)
-    {
-        Account a;
-	if(t->error() == Tokenizer::EOF_ERROR) break;
-        noError = a.readFrom(t);
-        a.fillAccount(defAccount);
-        s += a.errorMsg();
-        all.append(a);
-    }
-
-    if(!noError) QMessageBox(QMessageBox::Information, QObject::tr("Load result"), s, QMessageBox::Ok).exec();
-
-    MainWindow w(all, defAccount.note());
+    MainWindow w(&accounts);
     w.show();
 
     return a.exec();

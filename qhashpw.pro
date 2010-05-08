@@ -7,10 +7,12 @@ SOURCES += main.cpp \
     mainwindow.cpp \
     tokenizer.cpp \
     account.cpp \
-    hashpw.c
+    hashpw.c \
+    accountset.cpp
 HEADERS += mainwindow.h \
     tokenizer.h \
     account.h \
-    hashpw.h
+    hashpw.h \
+    accountset.h
 FORMS += 
 LIBS += -lssl

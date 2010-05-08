@@ -12,8 +12,8 @@
 #include "hashpw.h"
 #include "mainwindow.h"
 
-MainWindow::MainWindow(QList<Account> &a, const QString &accessCode, QWidget *parent)
-    : QMainWindow(parent), accessCode(accessCode)
+MainWindow::MainWindow(AccountSet *accounts, QWidget *parent)
+    : QMainWindow(parent), accounts_(accounts)
 {
     QToolBar *searchBar = new QToolBar();
 
@@ -21,10 +21,11 @@ MainWindow::MainWindow(QList<Account> &a, const QString &accessCode, QWidget *pa
     searchBar->addWidget(searchPhrase);
     searchBar->addAction(tr("Filter"), this, SLOT(filter()));
     connect(searchPhrase, SIGNAL(returnPressed()), SLOT(filter()));
+    connect(accounts_, SIGNAL(filterChanged()), SLOT(updateTable()));
 
     this->addToolBar(Qt::TopToolBarArea, searchBar);
 
-    tab = new QTableWidget(a.size(), 5);
+    tab = new QTableWidget(accounts->rowCount(), 5);
 
     QStringList headers;
     headers << tr("Site") << tr("User") << tr("Password") << tr("Note") << tr("");
@@ -35,7 +36,6 @@ MainWindow::MainWindow(QList<Account> &a, const QString &accessCode, QWidget *pa
     connect(tab, SIGNAL(cellClicked(int,int)), SLOT(cellClicked(int,int)));
     connect(tab, SIGNAL(cellEntered(int,int)), SLOT(cellEntered(int,int)));
 
-    all = a;
     filter();
 
     setCentralWidget(tab);
@@ -55,33 +55,31 @@ void MainWindow::updateTable()
 {
     currentlyVisiblePW = -1;
     tab->clearContents();  // note: will delete the items
-    tab->setRowCount(filtered.size());
+    tab->setRowCount(accounts_->rowCount());
 
-    int i = 0;
-
-    foreach(Account *a, filtered)
+    for(int i = 0; i < accounts_->rowCount(); ++i)
     {
+        Account a = accounts_->at(i);
+
         QTableWidgetItem *it;
 
-        it = new QTableWidgetItem(a->site());
+        it = new QTableWidgetItem(a.site());
         tab->setItem(i, 0, it);
 
-        it = new QTableWidgetItem(a->user());
+        it = new QTableWidgetItem(a.user());
         tab->setItem(i, 1, it);
 
         QString s;
-        for(int j = 0; j < a->max(); ++j)
+        for(int j = 0; j < a.max(); ++j)
             s += "*";
         it = new QTableWidgetItem(s);
         tab->setItem(i, 2, it);
 
-        it = new QTableWidgetItem(a->note());
+        it = new QTableWidgetItem(a.note());
         tab->setItem(i, 3, it);
 
         it = new QTableWidgetItem(tr("Copy"));
         tab->setItem(i, 4, it);
-
-        ++i;
     }
 }
 
@@ -89,7 +87,7 @@ void MainWindow::cellClicked(int row, int column)
 {
     if(column != 4 || mainPW.isEmpty()) return;
 
-    QApplication::clipboard()->setText(getPassword(filtered[row]));
+    QApplication::clipboard()->setText(getPassword(accounts_->at(row)));
 }
 
 void MainWindow::cellEntered(int row, int column)
@@ -99,17 +97,17 @@ void MainWindow::cellEntered(int row, int column)
     hideVisiblePW();
 
     QTableWidgetItem *it = tab->item(row, 2);
-    it->setText(getPassword(filtered[row]));
+    it->setText(getPassword(accounts_->at(row)));
     currentlyVisiblePW = row;
     QTimer::singleShot(10000, this, SLOT(hideVisiblePW()));
 }
 
-QString MainWindow::getPassword(const Account *a) const
+QString MainWindow::getPassword(const Account &a) const
 {
-    char *pw = new char[a->max()+1];
-    QByteArray desc = (a->site()+a->user()).toLocal8Bit();
+    char *pw = new char[a.max()+1];
+    QByteArray desc = (a.site()+a.user()).toLocal8Bit();
     QByteArray mainPW = this->mainPW.toLocal8Bit();
-    getpw(mainPW.constData(), desc.constData(), a->num(), a->min(), a->max(), a->flags(), pw);
+    getpw(mainPW.constData(), desc.constData(), a.num(), a.min(), a.max(), a.flags(), pw);
     QString result = pw;
     delete pw;
     return result;
@@ -117,13 +115,7 @@ QString MainWindow::getPassword(const Account *a) const
 
 void MainWindow::filter()
 {
-    filtered.clear();
-    for(int i = 0; i < all.size(); ++i)
-    {
-        if(all[i].site().contains(searchPhrase->text(), Qt::CaseInsensitive))
-            filtered.append(&all[i]);
-    }
-    updateTable();
+    accounts_->filter(searchPhrase->text());
 }
 
 void MainWindow::hideVisiblePW()
@@ -133,7 +125,7 @@ void MainWindow::hideVisiblePW()
     QTableWidgetItem *it = tab->item(currentlyVisiblePW, 2);
 
     QString s;
-    for(int j = 0; j < filtered[currentlyVisiblePW]->max(); ++j)
+    for(int j = 0; j < accounts_->at(currentlyVisiblePW).max(); ++j)
         s += "*";
     it->setText(s);
 
@@ -153,7 +145,7 @@ void MainWindow::lockToggled(int state)
         char code[11];
         getpw(b.constData(), "", 1, 10, 10, FLAGS_ALNUM, code);
 
-        if(accessCode != code)
+        if(accounts_->accessCode() != code)
         {
             QMessageBox(
                     QMessageBox::Critical,
