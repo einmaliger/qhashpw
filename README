@@ -1,0 +1,17 @@
+qhashpw is an on-the-fly secure password creation utility.
+
+It creates secure passwords using a single master password and a set
+of account data that describes the rules of each password (i.e., possible
+length and allowed character classes) and what it is used for.
+A simple HMAC mechanism is used to create password that are evenly
+distributed over the sets of possible passwords.
+
+The account data is stored in a single easy-to-read (JSON-like) text
+file making it possible to create password in a wide variety of settings.
+
+Implementations of the password creator exist for JavaScript and as a
+ANSI-C CLI. This is my attempt at a GUI using Qt.
+
+Right now you won't be able to make much use of it as the tool is only
+able to create the password, but the account data must still be edited
+in the textfile, which is not documented at this point.
