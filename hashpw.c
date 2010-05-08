@@ -37,13 +37,55 @@
  * Only used for sanity checks */
 #define MAX_INPUT_LENGTH	1024
 
+/* Every value of PasswortOptions::hash less than
+ * this value will be allowed */
+#define MAX_HASH_VALUE          3
+
+static const EVP_MD *get_evp_md_for_hash(int hash)
+{
+    assert(hash <= MAX_HASH_VALUE);
+
+    switch(hash)
+    {
+    case HASH_RIPEMD160:  return EVP_ripemd160();
+    case HASH_SHA1:       return EVP_sha1();
+    case HASH_DSS1:       return EVP_dss1();
+    case HASH_MD5:        return EVP_md5();
+    default:              return NULL;      /* Will never be reached */
+    }
+}
+
 /* A set of special characters */
 static const char *specialchars="!\"#$%&'()*+-./:;<=>?@[\\]^_{|}~";
+
+void init_PasswordOptions(struct PasswordOptions *opt)
+{
+    memset((void*)opt, 0, sizeof(struct PasswordOptions));
+}
 
 /*******************************************************************/
 /** Password generation                                           **/
 
 int getpw(const char *mainPW, const char *descr, int num, int min, int max, unsigned flags, char *result)
+{
+    struct PasswordOptions opt;
+
+    if(flags > PARAM_MAX_V1) return -2;
+
+    opt.mainPW = mainPW;
+    opt.salt = "";
+    opt.descr = descr;
+    opt.num = num;
+    opt.min = min;
+    opt.max = max;
+    opt.flags = flags;
+
+    opt.hash = HASH_RIPEMD160;
+
+    return getpw2(&opt, result);
+}
+
+int getpw2(const struct PasswordOptions *opt, char *result)
 {
 	/* format of hashed string:
 	 * <mainPW><seq><descr><num>
@@ -51,31 +93,61 @@ int getpw(const char *mainPW, const char *descr, int num, int min, int max, unsi
 	 * where <fl> is 'a'+flags
 	 */
 
-	assert(PARAM_MAX < 26);
-	assert(flags);
+        assert(opt->flags);
+        assert(opt->hash <= MAX_HASH_VALUE);
 
 	// check for sane input values
-	if(strlen(mainPW) > MAX_INPUT_LENGTH ||
-	   strlen(descr) > MAX_INPUT_LENGTH)
+        if(strlen(opt->mainPW) > MAX_INPUT_LENGTH ||
+           strlen(opt->descr) > MAX_INPUT_LENGTH)
 		return -1;
 
-	if(flags > PARAM_MAX) return -2;
+        if(opt->flags > PARAM_MAX_V2) return -2;
 
-	if(max-min>255) return -3;
+        if(opt->hash > MAX_HASH_VALUE) return -4;
 
-	// Determine bit mask for length byte
-	unsigned char mask = 0;
-	while(max-min && ((max-min) & (128 >> mask)) == 0) mask++;
-	mask = 0xff >> mask;
+        /* If FL_EVENDIST we wait until a character is not a "leading 0" */
+        int password_has_started;
+
+        /* number of characters to create or -1 if we don't know that
+         * number (i.e., !FL_EVENDIST and min != max) */
+        int state;
+
+        /* Needed to determine length value (if !FL_EVENDIST) */
+        unsigned char mask;
+
+        if(opt->flags & FL_EVENDIST)
+        {
+            password_has_started = 0;
+            state = opt->max;
+        }
+         else
+        {
+            /* Determine password size the "classical" way,
+             * by selecting it evenly from min .. max */
+
+            if(opt->max-opt->min>255) return -3;
+
+            /* Do not wait for start of password once we have determined the length */
+            password_has_started = 1;
+
+            // Determine bit mask for length byte
+            mask = 0;
+            while(opt->max-opt->min && ((opt->max-opt->min) & (128 >> mask)) == 0) mask++;
+            mask = 0xff >> mask;
+
+            // both state number and counter
+            // too complicated to explain ;-)
+            state = opt->max-opt->min?-1:opt->min;
+        }
 
 	// size of hashed string buffer
-	int tempLength = MAX_INT_REP_LEN*2+strlen(descr);
+        int tempLength = MAX_INT_REP_LEN*2+strlen(opt->salt)+strlen(opt->descr);
 
 	char *tempStr = (char *)malloc(tempLength+1);
 	if(tempStr == NULL) return -9;
 
 	unsigned char hmac[EVP_MAX_MD_SIZE];		// hmac output
-	unsigned int hmaclen;		// length of current hmac
+        unsigned int hmaclen;                           // length of current hmac
 
 	int seq = 0;		// seq
 
@@ -84,23 +156,24 @@ int getpw(const char *mainPW, const char *descr, int num, int min, int max, unsi
 						// hash (with seq++) will be
 						// created
 
-	// both state number and counter
-	// too complicated to explain ;-)
-	int state = max-min?-1:min;
+        const EVP_MD *hash_algo = get_evp_md_for_hash(opt->hash);
 
-	while(state)
+        if(hash_algo == NULL) return -4;
+
+        while(state)
 	{
 		// retrieve a single byte
 		if(i == 0)
 		{
 			// next hmac
-			snprintf(tempStr, tempLength, "%i%s%i",
+                        snprintf(tempStr, tempLength, "%i%s%s%i",
 				seq++,
-				descr,
-				num);
+                                opt->salt,
+                                opt->descr,
+                                opt->num);
 
-			HMAC(EVP_ripemd160(),
-				mainPW, strlen(mainPW),
+                        HMAC(hash_algo,
+                                opt->mainPW, strlen(opt->mainPW),
 				(unsigned char *)tempStr, strlen(tempStr),
 				hmac, &hmaclen);
 			
@@ -113,16 +186,30 @@ int getpw(const char *mainPW, const char *descr, int num, int min, int max, unsi
 		if(state == -1)
 		{
 			b &= mask;
-			if(b < max-min) state = ((int)b)+min;
+                        if(b < opt->max-opt->min) state = ((int)b)+opt->min;
 			continue;
 		}
 
+                if(!password_has_started)
+                {
+                    /* As long as we have more than min character
+                     * to create, we can have leading zeros,
+                     * If only min chars are left, we must
+                     * start */
+                    if( b != 0 || state == opt->min)
+                    {
+                        password_has_started = 1;
+                    }
+                     else
+                    continue;
+                }
+
 		// else we are retrieving the next passwort byte
 		// test if b is a valid byte
-		if( ((flags&FL_LOWER) && islower(b)) ||
-			((flags&FL_UPPER) && isupper(b)) ||
-			((flags&FL_DIGIT) && isdigit(b)) ||
-			((flags&FL_SPECIAL) && b!= 0 && strchr(specialchars, b)))
+                if( ((opt->flags&FL_LOWER) && islower(b)) ||
+                        ((opt->flags&FL_UPPER) && isupper(b)) ||
+                        ((opt->flags&FL_DIGIT) && isdigit(b)) ||
+                        ((opt->flags&FL_SPECIAL) && b!= 0 && strchr(specialchars, b)))
 		{
 			// okay, valid char
 			*result++ = (char)b;
