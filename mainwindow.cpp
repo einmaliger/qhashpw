@@ -100,9 +100,7 @@ void MainWindow::lockToggled(int state)
                 tr("Enter main password to unlock"),
                 QLineEdit::Password
                 );
-        mainPW = password;
 
         emit mainPWEntered(password);
     }
-    setMouseTracking(!state);
 }

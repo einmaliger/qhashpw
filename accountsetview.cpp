@@ -80,6 +80,8 @@ void AccountSetView::hideVisiblePW()
 
 void AccountSetView::setMainPassword(const QString &password)
 {
+    setMouseTracking(false);
+
     QByteArray b = password.toLocal8Bit();
     char code[11];
     getpw(b.constData(), "", 1, 10, 10, FLAGS_ALNUM, code);
@@ -95,7 +97,9 @@ void AccountSetView::setMainPassword(const QString &password)
         return;
     }
 
+    setMouseTracking(true);
     mainPW_ = password;
+
     currentlyVisiblePW = -1;
 }
 

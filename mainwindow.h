@@ -52,8 +52,6 @@ private:
 
     AccountSet *accounts_;
 
-    QString mainPW;
-
 signals:
     void filterChanged(QString filter);
     void mainPWEntered(QString mainPW);
