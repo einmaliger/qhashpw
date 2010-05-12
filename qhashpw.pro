@@ -9,12 +9,14 @@ SOURCES += main.cpp \
     account.cpp \
     hashpw.c \
     accountset.cpp \
-    mytabwidget.cpp
+    mytabwidget.cpp \
+    accountsetview.cpp
 HEADERS += mainwindow.h \
     tokenizer.h \
     account.h \
     hashpw.h \
     accountset.h \
-    mytabwidget.h
+    mytabwidget.h \
+    accountsetview.h
 FORMS += 
 LIBS += -lssl
