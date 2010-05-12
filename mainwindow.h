@@ -26,6 +26,7 @@
 #include <QtGui/QTableWidget>
 
 #include "accountset.h"
+#include "mytabwidget.h"
 
 class QLineEdit;
 
@@ -49,6 +50,7 @@ private slots:
     void lockToggled(int state);
 
 private:
+    MyTabWidget *center;
     QTableWidget *tab;
     QCheckBox *lock;
     QLineEdit *searchPhrase;

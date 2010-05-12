@@ -44,6 +44,8 @@ MainWindow::MainWindow(AccountSet *accounts, QWidget *parent)
 
     this->addToolBar(Qt::TopToolBarArea, searchBar);
 
+    center = new MyTabWidget;
+
     tab = new QTableWidget(accounts->rowCount(), 5);
 
     QStringList headers;
@@ -57,7 +59,9 @@ MainWindow::MainWindow(AccountSet *accounts, QWidget *parent)
 
     filter();
 
-    setCentralWidget(tab);
+    center->addTab(tab, "test");
+
+    setCentralWidget(center);
 
     lock = new QCheckBox("Locked");
     lock->setChecked(true);

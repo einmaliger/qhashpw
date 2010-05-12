@@ -8,11 +8,13 @@ SOURCES += main.cpp \
     tokenizer.cpp \
     account.cpp \
     hashpw.c \
-    accountset.cpp
+    accountset.cpp \
+    mytabwidget.cpp
 HEADERS += mainwindow.h \
     tokenizer.h \
     account.h \
     hashpw.h \
-    accountset.h
+    accountset.h \
+    mytabwidget.h
 FORMS += 
 LIBS += -lssl
