@@ -105,14 +105,15 @@ void MainWindow::filter()
 
 void MainWindow::lockActionToggled(bool state)
 {
+    Q_ASSERT(center->currentSet() != 0);
     // Let the current AccountSetView handle this
-    dynamic_cast<AccountSetView*>(center->currentWidget())->toggleLock(state);
+    center->currentSet()->toggleLock(state);
 }
 
 void MainWindow::updateLockAction(int)
 {
-    bool enabled = center->count() > 0 && center->currentWidget() != 0;
-    bool locked = !enabled || dynamic_cast<AccountSetView*>(center->currentWidget())->isLocked();
+    bool enabled = center->count() > 0 && center->currentSet() != 0;
+    bool locked = !enabled || center->currentSet()->isLocked();
 
     lockAction->setChecked(locked);
     lockAction->setIcon(locked?QIcon("img/locked.svg"):QIcon("img/unlocked.svg"));

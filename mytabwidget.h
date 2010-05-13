@@ -24,12 +24,19 @@
 
 class QTabBar;
 
+class AccountSetView;
+
 // A tab widget that automatically hides its
 // tab bar when less than two tabs are open
 class MyTabWidget : public QTabWidget
 {
 public:
     MyTabWidget(QWidget *parent = 0);
+
+    // Returns currently selected AccountSetView
+    // or 0, if the current selection is not an AccountSetView
+    // or there is no selection
+    AccountSetView *currentSet() const;
 
 protected:
     void tabInserted(int index);

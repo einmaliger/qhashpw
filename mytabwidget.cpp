@@ -33,6 +33,11 @@ MyTabWidget::MyTabWidget(QWidget *parent)
     setTabsClosable(true);
 }
 
+AccountSetView *MyTabWidget::currentSet() const
+{
+    return currentIndex == -1 ? 0 : qobject_cast<AccountSetView*>(currentWidget());
+}
+
 void MyTabWidget::tabInserted(int)
 {
     tabBar->setVisible(count() > 1);
