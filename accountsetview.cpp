@@ -28,15 +28,14 @@
 #include "hashpw.h"
 
 AccountSetView::AccountSetView(AccountSet *as)
-    : QTableWidget(as->rowCount(), 5), accounts_(as), isLocked_(true)
+    : QTableWidget(as->rowCount(), 4), accounts_(as), isLocked_(true)
 {
     QStringList headers;
-    headers << tr("Site") << tr("User") << tr("Password") << tr("Note") << tr("");
+    headers << tr("Site") << tr("User") << tr("Password") << tr("Note");
     setHorizontalHeaderLabels(headers);
-    //setSelectionBehavior(QAbstractItemView::SelectRows);
-    setSelectionMode(QAbstractItemView::NoSelection);
+    setSelectionBehavior(QAbstractItemView::SelectRows);
+    setSelectionMode(QAbstractItemView::SingleSelection);
 
-    connect(this, SIGNAL(cellClicked(int,int)), SLOT(cellClicked(int,int)));
     connect(this, SIGNAL(cellEntered(int,int)), SLOT(cellEntered(int,int)));
 
     connect(accounts_, SIGNAL(filterChanged()), SLOT(updateTable()));
@@ -49,11 +48,33 @@ AccountSetView::~AccountSetView()
     delete accounts_;
 }
 
-void AccountSetView::cellClicked(int row, int column)
+void AccountSetView::copyCurrentPassword() const
 {
-    if(column != 4 || isLocked_ ) return;
+    // At most one row, which is columnCount() cells,
+    // can be selected
+    Q_ASSERT(selectedIndexes().size() <= columnCount());
 
-    QApplication::clipboard()->setText(getPassword(accounts_->at(row)));
+    if(selectedIndexes().size() == 0)
+        QMessageBox(
+                QMessageBox::Critical,
+                tr("Nothing selected"),
+                tr("You must select an account first"),
+                QMessageBox::Ok
+                ).exec();
+    else
+    {
+        // Unfortunately selectedItems is not const, so we need to hack a bit here
+        const QTableWidgetItem *w = const_cast<AccountSetView*>(this)->selectedItems()[0];
+        Account a = accounts_->at(row(w));
+        QApplication::clipboard()->setText(getPassword(a));
+        QMessageBox(QMessageBox::Information,
+                    tr("Success"),
+                    tr("The password for\n%1@%2\nwas copied to the clipboard")
+                    .arg(a.user())
+                    .arg(a.site()),
+                    QMessageBox::Ok)
+        .exec();
+    }
 }
 
 void AccountSetView::cellEntered(int row, int column)
@@ -161,8 +182,5 @@ void AccountSetView::updateTable()
 
         it = new QTableWidgetItem(a.note());
         setItem(i, 3, it);
-
-        it = new QTableWidgetItem(tr("Copy"));
-        setItem(i, 4, it);
     }
 }

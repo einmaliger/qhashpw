@@ -45,6 +45,7 @@ public slots:
 private slots:
     void filter();
     void lockActionToggled(bool state);
+    void toClipboardActionTriggered();
     void updateLockAction(int unused = -1);
 
 private:
@@ -54,6 +55,7 @@ private:
 
     AccountSet *accounts_;
     QAction *lockAction;
+    QAction *toClipboardAction;
 
 signals:
     void filterChanged(QString filter);

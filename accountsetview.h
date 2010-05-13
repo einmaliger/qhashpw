@@ -36,6 +36,7 @@ public:
     bool isLocked() { return isLocked_; }
 
 public slots:
+    void copyCurrentPassword() const;
     void hideVisiblePW();
     void toggleLock(bool newstate);
 
@@ -43,7 +44,6 @@ private:
     const QString &mainPW() const { return mainPW_; }
 
 private slots:
-    void cellClicked(int row, int column);
     void cellEntered(int row, int column);
     void filter(const QString &searchPhrase);
     QString getPassword(const Account &a) const;

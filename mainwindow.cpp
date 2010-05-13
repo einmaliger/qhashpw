@@ -33,14 +33,21 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
     // Create actions
-    lockAction = new QAction(this);
+    lockAction = new QAction(this); // icon and string will be set in updateLockAction
     lockAction->setCheckable(true);
+
+    toClipboardAction = new QAction(QIcon("img/toclipboard.svgz"), tr("Copy"), this);
+    toClipboardAction->setToolTip(tr("Copy the selected password to the clipboard"));
 
     // Create tool bars
     QToolBar *mainToolBar = new QToolBar;
+    mainToolBar->setIconSize(QSize(QStyle::PM_SmallIconSize,QStyle::PM_SmallIconSize));
+    mainToolBar->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
     mainToolBar->addAction(lockAction);
+    mainToolBar->addAction(toClipboardAction);
 
-    this->addToolBar(Qt::TopToolBarArea, mainToolBar);
+    addToolBar(Qt::TopToolBarArea, mainToolBar);
+    addToolBarBreak();
 
     QToolBar *searchBar = new QToolBar;
     searchPhrase = new QLineEdit;
@@ -48,7 +55,7 @@ MainWindow::MainWindow(QWidget *parent)
     searchBar->addAction(tr("Filter"), this, SLOT(filter()));
     connect(searchPhrase, SIGNAL(returnPressed()), SLOT(filter()));
 
-    this->addToolBar(Qt::TopToolBarArea, searchBar); 
+    addToolBar(Qt::TopToolBarArea, searchBar);
 
     center = new MyTabWidget;
 
@@ -57,6 +64,7 @@ MainWindow::MainWindow(QWidget *parent)
     updateLockAction();
     connect(center, SIGNAL(currentChanged(int)), SLOT(updateLockAction(int)));
     connect(lockAction, SIGNAL(toggled(bool)), SLOT(lockActionToggled(bool)));
+    connect(toClipboardAction, SIGNAL(triggered()),SLOT(toClipboardActionTriggered()));
 
     //lock = new QCheckBox("Locked");
     //lock->setChecked(true);
@@ -76,7 +84,7 @@ void MainWindow::addAccountSet(const QString &filename)
     f.open(QIODevice::ReadOnly);
     Tokenizer *t = new Tokenizer(&f); // deleted at end of function
     if(t->error() != Tokenizer::NO_ERROR)
-        QMessageBox(QMessageBox::Critical, QObject::tr("File error"), QObject::tr("The input file could not be opened"), QMessageBox::Ok).exec();
+        QMessageBox(QMessageBox::Critical, tr("File error"), tr("The input file could not be opened"), QMessageBox::Ok).exec();
 
     AccountSet *accounts = new AccountSet; // deleted by AccountSetView or in this function
 
@@ -91,7 +99,7 @@ void MainWindow::addAccountSet(const QString &filename)
     }
      else
     {
-        QMessageBox(QMessageBox::Information, QObject::tr("Load result"), accounts->errorMsg(), QMessageBox::Ok).exec();
+        QMessageBox(QMessageBox::Information, tr("Load result"), accounts->errorMsg(), QMessageBox::Ok).exec();
         delete accounts;
     }
 
@@ -110,6 +118,14 @@ void MainWindow::lockActionToggled(bool state)
     center->currentSet()->toggleLock(state);
 }
 
+void MainWindow::toClipboardActionTriggered()
+{
+    AccountSetView *s = center->currentSet();
+    Q_ASSERT(s != 0);
+    Q_ASSERT(!s->isLocked());
+    s->copyCurrentPassword();
+}
+
 void MainWindow::updateLockAction(int)
 {
     bool enabled = center->count() > 0 && center->currentSet() != 0;
@@ -120,4 +136,6 @@ void MainWindow::updateLockAction(int)
     lockAction->setText(locked?tr("Locked"):tr("Unlocked"));
     lockAction->setIconText(locked?tr("Locked"):tr("Unlocked"));
     lockAction->setEnabled(enabled);
+
+    toClipboardAction->setEnabled(!locked);
 }
