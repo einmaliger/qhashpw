@@ -14,10 +14,11 @@ public:
     ~AccountSetView();  // will delete accounts_!
 
     AccountSet *accounts() { return accounts_; }
+    bool isLocked() { return isLocked_; }
 
 public slots:
     void hideVisiblePW();
-    void setMainPassword(const QString &mainPW);
+    void toggleLock(bool newstate);
 
 private:
     const QString &mainPW() const { return mainPW_; }
@@ -31,8 +32,12 @@ private slots:
 
 private:
     AccountSet *accounts_;
+    bool isLocked_;
     int currentlyVisiblePW;     // row of password that is currently visible (or -1)
     QString mainPW_;
+
+signals:
+    void lockStateChanged();
 };
 
 #endif // ACCOUNTSETVIEW_H

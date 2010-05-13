@@ -1,6 +1,7 @@
 #include <QtCore/QTimer>
 #include <QtGui/QApplication>
 #include <QtGui/QClipboard>
+#include <QtGui/QInputDialog>
 #include <QtGui/QMessageBox>
 #include <QtGui/QTableWidgetItem>
 
@@ -8,7 +9,7 @@
 #include "hashpw.h"
 
 AccountSetView::AccountSetView(AccountSet *as)
-    : QTableWidget(as->rowCount(), 5), accounts_(as)
+    : QTableWidget(as->rowCount(), 5), accounts_(as), isLocked_(true)
 {
     QStringList headers;
     headers << tr("Site") << tr("User") << tr("Password") << tr("Note") << tr("");
@@ -31,14 +32,14 @@ AccountSetView::~AccountSetView()
 
 void AccountSetView::cellClicked(int row, int column)
 {
-    if(column != 4 || mainPW().isEmpty()) return;
+    if(column != 4 || isLocked_ ) return;
 
     QApplication::clipboard()->setText(getPassword(accounts_->at(row)));
 }
 
 void AccountSetView::cellEntered(int row, int column)
 {
-    if(column != 2 || mainPW().isEmpty() || currentlyVisiblePW == row) return;
+    if(column != 2 || isLocked_ || currentlyVisiblePW == row) return;
 
     hideVisiblePW();
 
@@ -78,31 +79,44 @@ void AccountSetView::hideVisiblePW()
     currentlyVisiblePW = -1;
 }
 
-void AccountSetView::setMainPassword(const QString &password)
+void AccountSetView::toggleLock(bool newstate)
 {
     setMouseTracking(false);
 
-    QByteArray b = password.toLocal8Bit();
-    char code[11];
-    getpw(b.constData(), "", 1, 10, 10, FLAGS_ALNUM, code);
-
-    if(accounts_->accessCode() != code)
+    if(isLocked_ == true && newstate == false)
     {
-        QMessageBox(
-                QMessageBox::Critical,
-                tr("Password Error"),
-                tr("Password not correct"),
-                QMessageBox::Ok
-                ).exec();
-        return;
+        QString password = QInputDialog::getText(
+                this, tr("Main Password"),
+                tr("Enter main password to unlock"),
+                QLineEdit::Password
+                );
+
+        QByteArray b = password.toLocal8Bit();
+        char code[11];
+        getpw(b.constData(), "", 1, 10, 10, FLAGS_ALNUM, code);
+
+        if(accounts_->accessCode() != code)
+        {
+            QMessageBox(
+                    QMessageBox::Critical,
+                    tr("Password Error"),
+                    tr("Password not correct"),
+                    QMessageBox::Ok
+                    ).exec();
+        }
+         else
+        {
+            setMouseTracking(true);
+            mainPW_ = password;
+            isLocked_ = false;
+
+            currentlyVisiblePW = -1;
+        }
     }
+     else isLocked_ = newstate;
 
-    setMouseTracking(true);
-    mainPW_ = password;
-
-    currentlyVisiblePW = -1;
+    emit lockStateChanged();
 }
-
 
 void AccountSetView::updateTable()
 {

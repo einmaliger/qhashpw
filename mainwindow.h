@@ -21,6 +21,7 @@
 #define MAINWINDOW_H
 
 #include <QtCore/QList>
+#include <QtGui/QAction>
 #include <QtGui/QCheckBox>
 #include <QtGui/QMainWindow>
 #include <QtGui/QTableWidget>
@@ -43,7 +44,8 @@ public slots:
 
 private slots:
     void filter();
-    void lockToggled(int state);
+    void lockActionToggled(bool state);
+    void updateLockAction(int unused = -1);
 
 private:
     MyTabWidget *center;
@@ -51,6 +53,7 @@ private:
     QLineEdit *searchPhrase;
 
     AccountSet *accounts_;
+    QAction *lockAction;
 
 signals:
     void filterChanged(QString filter);

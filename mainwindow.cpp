@@ -20,7 +20,6 @@
 #include <QtCore/QFileInfo>
 #include <QtCore/QStringList>
 #include <QtCore/QTimer>
-#include <QtGui/QInputDialog>
 #include <QtGui/QLineEdit>
 #include <QtGui/QMessageBox>
 #include <QtGui/QStatusBar>
@@ -33,24 +32,37 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
-    QToolBar *searchBar = new QToolBar();
+    // Create actions
+    lockAction = new QAction(this);
+    lockAction->setCheckable(true);
 
+    // Create tool bars
+    QToolBar *mainToolBar = new QToolBar;
+    mainToolBar->addAction(lockAction);
+
+    this->addToolBar(Qt::TopToolBarArea, mainToolBar);
+
+    QToolBar *searchBar = new QToolBar;
     searchPhrase = new QLineEdit;
     searchBar->addWidget(searchPhrase);
     searchBar->addAction(tr("Filter"), this, SLOT(filter()));
     connect(searchPhrase, SIGNAL(returnPressed()), SLOT(filter()));
 
-    this->addToolBar(Qt::TopToolBarArea, searchBar);
+    this->addToolBar(Qt::TopToolBarArea, searchBar); 
 
     center = new MyTabWidget;
 
     setCentralWidget(center);
 
-    lock = new QCheckBox("Locked");
-    lock->setChecked(true);
-    connect(lock, SIGNAL(stateChanged(int)),SLOT(lockToggled(int)));
+    updateLockAction();
+    connect(center, SIGNAL(currentChanged(int)), SLOT(updateLockAction(int)));
+    connect(lockAction, SIGNAL(toggled(bool)), SLOT(lockActionToggled(bool)));
 
-    statusBar()->addPermanentWidget(lock);
+    //lock = new QCheckBox("Locked");
+    //lock->setChecked(true);
+    //connect(lock, SIGNAL(stateChanged(int)),SLOT(lockToggled(int)));
+
+    //statusBar()->addPermanentWidget(lock);
 }
 
 MainWindow::~MainWindow()
@@ -72,8 +84,8 @@ void MainWindow::addAccountSet(const QString &filename)
     {
         AccountSetView *asv = new AccountSetView(accounts); // transfers possession of accounts to asv!
 
-        connect(this, SIGNAL(mainPWEntered(QString)), asv, SLOT(setMainPassword(QString)));
         connect(this, SIGNAL(filterChanged(QString)), asv, SLOT(filter(QString)));
+        connect(asv, SIGNAL(lockStateChanged()), SLOT(updateLockAction()));
 
         center->addTab(asv, fi.fileName());
     }
@@ -91,16 +103,20 @@ void MainWindow::filter()
     emit filterChanged(searchPhrase->text());
 }
 
-void MainWindow::lockToggled(int state)
+void MainWindow::lockActionToggled(bool state)
 {
-    if(state == Qt::Unchecked)
-    {
-        QString password = QInputDialog::getText(
-                this, tr("Main Password"),
-                tr("Enter main password to unlock"),
-                QLineEdit::Password
-                );
+    // Let the current AccountSetView handle this
+    dynamic_cast<AccountSetView*>(center->currentWidget())->toggleLock(state);
+}
 
-        emit mainPWEntered(password);
-    }
+void MainWindow::updateLockAction(int)
+{
+    bool enabled = center->count() > 0 && center->currentWidget() != 0;
+    bool locked = !enabled || dynamic_cast<AccountSetView*>(center->currentWidget())->isLocked();
+
+    lockAction->setChecked(locked);
+    lockAction->setIcon(locked?QIcon("img/locked.svg"):QIcon("img/unlocked.svg"));
+    lockAction->setText(locked?tr("Locked"):tr("Unlocked"));
+    lockAction->setIconText(locked?tr("Locked"):tr("Unlocked"));
+    lockAction->setEnabled(enabled);
 }
