@@ -96,8 +96,22 @@ void AccountSetView::filter(const QString &searchPhrase)
 
 QString AccountSetView::getPassword(const Account &a) const
 {
+    QByteArray mainPW = mainPW_.toLocal8Bit();
+    QByteArray salt = a.salt().toLocal8Bit();
+    QByteArray desc = (a.site() + a.user()).toLocal8Bit();
+    struct PasswordOptions opt;
+
+    opt.mainPW = mainPW.constData();
+    opt.salt = salt.constData();
+    opt.descr = desc.constData();
+    opt.num = a.num();
+    opt.min = a.min();
+    opt.max = a.max();
+    opt.flags = a.flags();
+    opt.hash = a.algo();
+
     char *pw = new char[a.max()+1];
-    getpw(qPrintable(mainPW_), qPrintable(a.site()+a.user()), a.num(), a.min(), a.max(), a.flags(), pw);
+    getpw2(&opt, pw);
     QString result = pw;
     delete pw;
     return result;

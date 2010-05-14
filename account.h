@@ -52,6 +52,8 @@ public:
     inline QString site() const { return site_; }
     inline QString user() const { return user_; }
     inline QString note() const { return note_; }
+    inline QString salt() const { return salt_; }
+    inline int algo() const { return algo_; }
     inline int flags() const { return flags_; }
     inline int min() const { return min_; }
     inline int max() const { return max_; }
@@ -65,14 +67,15 @@ public:
     }
 
 private:
+    bool doAlgoAssignment(const Tokenizer *t, const QString &val);
     bool doFlagAssignment(const Tokenizer *t, const QString &val);
     bool forceChar(Tokenizer *t, char c, const QString &errorMsg);
     void raiseError(const Tokenizer *t, const QString &msg);
     void raiseTokenizerError(const Tokenizer *t);
     void raiseWarning(const Tokenizer *t, const QString &msg);
 
-    QString site_, user_, note_;
-    int flags_, min_, max_, num_;
+    QString site_, user_, note_, salt_;
+    int algo_, flags_, min_, max_, num_;
 
     QString errorMsg_;
 };

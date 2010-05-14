@@ -20,17 +20,17 @@
 #include "account.h"
 #include "hashpw.h"
 
-const int Account::INVALID_INT_FIELD = 100;
+const int Account::INVALID_INT_FIELD = -1;
 
 Account::Account()
-: flags_(INVALID_INT_FIELD), min_(INVALID_INT_FIELD), max_(INVALID_INT_FIELD),
-num_(INVALID_INT_FIELD)
+: algo_(HASH_RIPEMD160), flags_(INVALID_INT_FIELD), min_(INVALID_INT_FIELD),
+max_(INVALID_INT_FIELD), num_(INVALID_INT_FIELD)
 {
 }
 
 Account::Account(const Account &a)
-: QObject(), site_(a.site()), user_(a.user()), note_(a.note()),
-  flags_(a.flags()), min_(a.min()), max_(a.max()),
+: QObject(), site_(a.site()), user_(a.user()), note_(a.note()), salt_(a.salt()),
+  algo_(a.algo()), flags_(a.flags()), min_(a.min()), max_(a.max()),
   num_(a.num())
 {
 }
@@ -47,7 +47,9 @@ bool Account::readFrom(Tokenizer *t)
         {"site", &site_, NULL},
         {"user", &user_, NULL},
         {"note", &note_, NULL},
+        {"salt", &salt_, NULL},
         {"flag", reinterpret_cast<QString*>(&flags_), &flags_},
+        {"algo", reinterpret_cast<QString*>(&algo_), &algo_},
         {"min", NULL, &min_},
         {"max", NULL, &max_},
         {"num", NULL, &num_},
@@ -103,6 +105,14 @@ bool Account::readFrom(Tokenizer *t)
                  if(!doFlagAssignment(t, *t->tok.s))
                     return false;
             }
+             else if(key == "algo")
+            {
+                 if(flags_ != INVALID_INT_FIELD)
+                     goto errorDoubleAssign;
+                 else
+                  if(!doAlgoAssignment(t, *t->tok.s))
+                     return false;
+            }
              else
             {
                  if(!var[i].sval->isNull())
@@ -137,13 +147,35 @@ errorDoubleAssign:
 
 void Account::fillAccount(const Account &defaultAccount)
 {
-    if(user_.isNull()) user_ = defaultAccount.user_;
-    if(site_.isNull()) site_ = defaultAccount.site_;
+    if(user_.isNull()) user_ = defaultAccount.user();
+    if(site_.isNull()) site_ = defaultAccount.site();
     // Do not inherit note
-    if(flags_ == INVALID_INT_FIELD) flags_ = defaultAccount.flags_;
-    if(min_ == INVALID_INT_FIELD) min_ = defaultAccount.min_;
-    if(max_ == INVALID_INT_FIELD) max_ = defaultAccount.max_;
-    if(num_ == INVALID_INT_FIELD) num_ = defaultAccount.num_;
+    if(salt_.isNull()) salt_ = defaultAccount.salt();
+    if(algo_ == INVALID_INT_FIELD) algo_ = defaultAccount.algo();
+    if(flags_ == INVALID_INT_FIELD) flags_ = defaultAccount.flags();
+    if(min_ == INVALID_INT_FIELD) min_ = defaultAccount.min();
+    if(max_ == INVALID_INT_FIELD) max_ = defaultAccount.max();
+    if(num_ == INVALID_INT_FIELD) num_ = defaultAccount.num();
+}
+
+bool Account::doAlgoAssignment(const Tokenizer *t, const QString &val)
+{
+    if(val == "ripemd160")
+        algo_ = HASH_RIPEMD160;
+    else if(val == "sha1")
+        algo_ = HASH_SHA1;
+    else if(val == "dss1")
+        algo_ = HASH_DSS1;
+    else if(val == "md5")
+        algo_ = HASH_MD5;
+    else
+    {
+        raiseError(t, tr("Invalid algorithm description \"%1\"")
+                   .arg(val));
+        return false;
+    }
+    return true;
+
 }
 
 bool Account::doFlagAssignment(const Tokenizer *t, const QString &val)
