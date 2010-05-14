@@ -37,7 +37,6 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
-    setAttribute(Qt::WA_DeleteOnClose);
     setWindowFilePath(QString());
 
     QSettings cfg;
