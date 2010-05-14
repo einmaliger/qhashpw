@@ -31,7 +31,5 @@ int main(int argc, char *argv[])
     MainWindow w;
     w.show();
 
-    w.addAccountSet("accounts.txt");
-
     return a.exec();
 }

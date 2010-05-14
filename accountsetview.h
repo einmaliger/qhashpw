@@ -29,10 +29,11 @@ class AccountSetView : public QTableWidget
     Q_OBJECT
 
 public:
-    AccountSetView(AccountSet *as); // transfers possession of as!
+    AccountSetView(AccountSet *as, const QString &filename = QString()); // transfers possession of as!
     ~AccountSetView();  // will delete accounts_!
 
     AccountSet *accounts() { return accounts_; }
+    QString filename() const { return filename_; }
     bool isLocked() { return isLocked_; }
 
 public slots:
@@ -51,6 +52,7 @@ private slots:
 
 private:
     AccountSet *accounts_;
+    QString filename_;
     bool isLocked_;
     int currentlyVisiblePW;     // row of password that is currently visible (or -1)
     QString mainPW_;

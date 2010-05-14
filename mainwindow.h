@@ -30,6 +30,7 @@
 #include "mytabwidget.h"
 
 class QLineEdit;
+class QMenu;
 
 class MainWindow : public QMainWindow
 {
@@ -39,23 +40,27 @@ public:
     MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
-public slots:
     void addAccountSet(const QString &filename);
 
 private slots:
     void filter();
     void lockActionToggled(bool state);
+    void open();
+    void openRecentFile();
     void toClipboardActionTriggered();
-    void updateLockAction(int unused = -1);
+    void updateCurrentSet(int unused = -1);
 
 private:
+    void updateRecentFileActions();
     MyTabWidget *center;
-    QCheckBox *lock;
     QLineEdit *searchPhrase;
 
     AccountSet *accounts_;
+
     QAction *lockAction;
+    QList<QAction*> recentFileActions;
     QAction *toClipboardAction;
+    QAction *separatorAction; // for recentFilesMenu
 
 signals:
     void filterChanged(QString filter);

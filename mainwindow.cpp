@@ -18,9 +18,14 @@
  */
 
 #include <QtCore/QFileInfo>
+#include <QtCore/QSettings>
 #include <QtCore/QStringList>
 #include <QtCore/QTimer>
+#include <QtGui/QApplication> // for qApp
+#include <QtGui/QFileDialog>
 #include <QtGui/QLineEdit>
+#include <QtGui/QMenu>
+#include <QtGui/QMenuBar>
 #include <QtGui/QMessageBox>
 #include <QtGui/QStatusBar>
 #include <QtGui/QToolBar>
@@ -32,12 +37,42 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
+    setAttribute(Qt::WA_DeleteOnClose);
+    setWindowFilePath(QString());
+
+    QSettings cfg;
+
     // Create actions
-    lockAction = new QAction(this); // icon and string will be set in updateLockAction
+    QAction *openAction = new QAction(tr("&Open..."), this);
+    openAction->setShortcut(QKeySequence::Open);
+    connect(openAction, SIGNAL(triggered()), SLOT(open()));
+
+    lockAction = new QAction(tr("Locked"), this);
     lockAction->setCheckable(true);
+    // checked, enabled will be set in updateCurrentSet
+
+    int maxRecentFiles = cfg.value("maxRecentFiles", 4).toInt();
+    for(int i = 0; i < maxRecentFiles; ++i)
+    {
+        recentFileActions.append(new QAction(this));
+        recentFileActions.last()->setVisible(false);
+        connect(recentFileActions.last(), SIGNAL(triggered()),
+                SLOT(openRecentFile()));
+    }
+
+    QAction *exitAction = new QAction(tr("E&xit"), this);
+    exitAction->setShortcut(QKeySequence::Quit);
+    connect(exitAction, SIGNAL(triggered()), SLOT(close()));
 
     toClipboardAction = new QAction(QIcon("img/toclipboard.svgz"), tr("Copy"), this);
+    toClipboardAction->setShortcut(QKeySequence::Copy);
     toClipboardAction->setToolTip(tr("Copy the selected password to the clipboard"));
+    // enabled will be set in updateCurrentSet
+
+    QAction *aboutAction = new QAction(tr("&About"), this);
+
+    QAction *aboutQtAction = new QAction(tr("About &Qt"), this);
+    connect(aboutQtAction, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
 
     // Create tool bars
     QToolBar *mainToolBar = new QToolBar;
@@ -61,16 +96,29 @@ MainWindow::MainWindow(QWidget *parent)
 
     setCentralWidget(center);
 
-    updateLockAction();
-    connect(center, SIGNAL(currentChanged(int)), SLOT(updateLockAction(int)));
+    updateCurrentSet();
+    connect(center, SIGNAL(currentChanged(int)), SLOT(updateCurrentSet(int)));
     connect(lockAction, SIGNAL(toggled(bool)), SLOT(lockActionToggled(bool)));
     connect(toClipboardAction, SIGNAL(triggered()),SLOT(toClipboardActionTriggered()));
 
-    //lock = new QCheckBox("Locked");
-    //lock->setChecked(true);
-    //connect(lock, SIGNAL(stateChanged(int)),SLOT(lockToggled(int)));
+    // Menus
+    QMenu *fileMenu = menuBar()->addMenu(tr("&File"));
+    fileMenu->addAction(openAction);
+    fileMenu->addAction(lockAction);
+    separatorAction = fileMenu->addSeparator();
+    for(int i = 0; i < maxRecentFiles; ++i)
+        fileMenu->addAction(recentFileActions[i]);
+    fileMenu->addSeparator();
+    fileMenu->addAction(exitAction);
+    updateRecentFileActions();
 
-    //statusBar()->addPermanentWidget(lock);
+    QMenu *accountMenu = menuBar()->addMenu(tr("&Account"));
+    accountMenu->addAction(toClipboardAction);
+
+    menuBar()->addSeparator();
+    QMenu *helpMenu = menuBar()->addMenu(tr("&Help"));
+    helpMenu->addAction(aboutAction);
+    helpMenu->addAction(aboutQtAction);
 }
 
 MainWindow::~MainWindow()
@@ -90,10 +138,10 @@ void MainWindow::addAccountSet(const QString &filename)
 
     if(accounts->readFrom(t))
     {
-        AccountSetView *asv = new AccountSetView(accounts); // transfers possession of accounts to asv!
+        AccountSetView *asv = new AccountSetView(accounts, filename); // transfers possession of accounts to asv!
 
         connect(this, SIGNAL(filterChanged(QString)), asv, SLOT(filter(QString)));
-        connect(asv, SIGNAL(lockStateChanged()), SLOT(updateLockAction()));
+        connect(asv, SIGNAL(lockStateChanged()), SLOT(updateCurrentSet()));
 
         center->addTab(asv, fi.fileName());
     }
@@ -118,6 +166,20 @@ void MainWindow::lockActionToggled(bool state)
     center->currentSet()->toggleLock(state);
 }
 
+void MainWindow::open()
+{
+    QString filename = QFileDialog::getOpenFileName(this);
+    if (!filename.isEmpty()) addAccountSet(filename);
+}
+
+// From Qt example
+void MainWindow::openRecentFile()
+{
+    QAction *action = qobject_cast<QAction *>(sender());
+    if (action)
+        addAccountSet(action->data().toString());
+}
+
 void MainWindow::toClipboardActionTriggered()
 {
     AccountSetView *s = center->currentSet();
@@ -126,16 +188,53 @@ void MainWindow::toClipboardActionTriggered()
     s->copyCurrentPassword();
 }
 
-void MainWindow::updateLockAction(int)
+void MainWindow::updateCurrentSet(int)
 {
     bool enabled = center->count() > 0 && center->currentSet() != 0;
     bool locked = !enabled || center->currentSet()->isLocked();
 
+    QString currentFilename = enabled?center->currentSet()->filename():QString();
+
+    setWindowFilePath(currentFilename);
+
+    if(!currentFilename.isEmpty())
+    {
+        // Taken from Qt example
+        QSettings settings;
+        QStringList files = settings.value("recentFileList").toStringList();
+        files.removeAll(currentFilename);
+        files.prepend(currentFilename);
+        while(files.size() > 4) files.removeLast();
+        settings.setValue("recentFileList", files);
+        updateRecentFileActions();
+    }
+
     lockAction->setChecked(locked);
     lockAction->setIcon(locked?QIcon("img/locked.svg"):QIcon("img/unlocked.svg"));
-    lockAction->setText(locked?tr("Locked"):tr("Unlocked"));
     lockAction->setIconText(locked?tr("Locked"):tr("Unlocked"));
     lockAction->setEnabled(enabled);
 
     toClipboardAction->setEnabled(!locked);
 }
+
+// Taken from Qt example, slightly modified
+void MainWindow::updateRecentFileActions()
+{
+    QSettings settings;
+    QStringList files = settings.value("recentFileList").toStringList();
+
+    int numRecentFiles = qMin(files.size(), recentFileActions.size());
+
+    int i;
+    for (i = 0; i < numRecentFiles; ++i) {
+        QString text = tr("&%1 %2").arg(i + 1).arg(QFileInfo(files[i]).fileName());
+        recentFileActions[i]->setText(text);
+        recentFileActions[i]->setData(files[i]);
+        recentFileActions[i]->setVisible(true);
+    }
+    for (; i < recentFileActions.size(); ++i)
+        recentFileActions[i]->setVisible(false);
+
+    separatorAction->setVisible(numRecentFiles > 0);
+}
+

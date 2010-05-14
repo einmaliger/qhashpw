@@ -27,8 +27,8 @@
 #include "accountsetview.h"
 #include "hashpw.h"
 
-AccountSetView::AccountSetView(AccountSet *as)
-    : QTableWidget(as->rowCount(), 4), accounts_(as), isLocked_(true)
+AccountSetView::AccountSetView(AccountSet *as, const QString &filename)
+    : QTableWidget(as->rowCount(), 4), accounts_(as), filename_(filename), isLocked_(true)
 {
     QStringList headers;
     headers << tr("Site") << tr("User") << tr("Password") << tr("Note");
