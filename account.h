@@ -25,6 +25,8 @@
 
 #include "tokenizer.h"
 
+class DefaultAccount;
+
 class Account : public QObject
 {
 public:
@@ -43,12 +45,16 @@ public:
     // will be set to EOF_ERROR and false will be returned
     // the next time.
     // errorMsg will contain textual descriptions of errors
-    bool readFrom(Tokenizer *t);
+    // def is used for the version information
+    // If def is 0, the calling object is assumed to
+    // become the default account and be of class DefaultAccount
+    virtual bool readFrom(Tokenizer *t, const DefaultAccount *def);
 
     // For every field that is set in default, but
     // not in this, copy the value from default
     void fillAccount(const Account &defaultAccount);
 
+    inline QString category() const { return category_; }
     inline QString site() const { return site_; }
     inline QString user() const { return user_; }
     inline QString note() const { return note_; }
@@ -66,7 +72,7 @@ public:
         return e;
     }
 
-private:
+protected:
     bool doAlgoAssignment(const Tokenizer *t, const QString &val);
     bool doFlagAssignment(const Tokenizer *t, const QString &val);
     bool forceChar(Tokenizer *t, char c, const QString &errorMsg);
@@ -74,10 +80,32 @@ private:
     void raiseTokenizerError(const Tokenizer *t);
     void raiseWarning(const Tokenizer *t, const QString &msg);
 
-    QString site_, user_, note_, salt_;
+    QString category_, site_, user_, note_, salt_;
     int algo_, flags_, min_, max_, num_;
 
     QString errorMsg_;
+};
+
+class DefaultAccount: public Account
+{
+    friend class Account;
+
+public:
+    DefaultAccount();
+
+    DefaultAccount(const DefaultAccount &a);
+    DefaultAccount operator=(const DefaultAccount &a);
+
+    inline QString author() const { return author_; }
+    inline QString currentCategory() const { return currentCategory_; }
+    inline int version() const { return version_; }
+
+    void setCurrentCategory(const QString &c)
+    { currentCategory_ = c; }
+
+protected:
+    QString author_, currentCategory_;
+    int version_;
 };
 
 #endif // ACCOUNT_H

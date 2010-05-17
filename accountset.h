@@ -42,7 +42,7 @@ public:
         return at(i);
     }
 
-    const Account defaultAccount() const
+    const DefaultAccount defaultAccount() const
     {
         return defaultAccount_;
     }
@@ -60,7 +60,7 @@ public:
 
     int rowCount() const;
 private:
-    Account defaultAccount_;
+    DefaultAccount defaultAccount_;
 
     QList<Account> all_;
     QList<Account*> filtered_;
