@@ -29,9 +29,9 @@ max_(INVALID_INT_FIELD), num_(INVALID_INT_FIELD)
 }
 
 Account::Account(const Account &a)
-: QObject(), site_(a.site()), user_(a.user()), note_(a.note()), salt_(a.salt()),
-  algo_(a.algo()), flags_(a.flags()), min_(a.min()), max_(a.max()),
-  num_(a.num())
+: QObject(), category_(a.category()), site_(a.site()), user_(a.user()),
+  note_(a.note()), salt_(a.salt()), algo_(a.algo()), flags_(a.flags()),
+  min_(a.min()), max_(a.max()), num_(a.num())
 {
 }
 
@@ -44,6 +44,7 @@ bool Account::readFrom(Tokenizer *t)
 {
     struct {const QString key; QString *sval; int *ival;} var[] =
     {
+        {"category", &category_, NULL},
         {"site", &site_, NULL},
         {"user", &user_, NULL},
         {"note", &note_, NULL},

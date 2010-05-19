@@ -19,28 +19,47 @@
 
 #include <QtCore/QTimer>
 #include <QtGui/QApplication>
+#include <QtGui/QBoxLayout>
 #include <QtGui/QClipboard>
 #include <QtGui/QInputDialog>
 #include <QtGui/QMessageBox>
+#include <QtGui/QTableWidget>
 #include <QtGui/QTableWidgetItem>
+#include <QtGui/QTreeWidget>
 
 #include "accountsetview.h"
 #include "hashpw.h"
 
 AccountSetView::AccountSetView(AccountSet *as, const QString &filename)
-    : QTableWidget(as->rowCount(), 4), accounts_(as), filename_(filename), isLocked_(true)
+    : QStackedWidget(), accounts_(as), filename_(filename), isLocked_(true)
 {
+    // Table/List view
+    tab = new QTableWidget(as->rowCount(),4);
     QStringList headers;
     headers << tr("Site") << tr("User") << tr("Password") << tr("Note");
-    setHorizontalHeaderLabels(headers);
-    setSelectionBehavior(QAbstractItemView::SelectRows);
-    setSelectionMode(QAbstractItemView::SingleSelection);
+    tab->setHorizontalHeaderLabels(headers);
+    tab->setSelectionBehavior(QAbstractItemView::SelectRows);
+    tab->setSelectionMode(QAbstractItemView::SingleSelection);
 
-    connect(this, SIGNAL(cellEntered(int,int)), SLOT(cellEntered(int,int)));
+    addWidget(tab);
+
+    // Detail view
+    QWidget *detailWidget = new QWidget;
+    QHBoxLayout *lay = new QHBoxLayout;
+    tree = new QTreeWidget;
+    lay->addWidget(tree);
+    detailWidget->setLayout(lay);
+    addWidget(detailWidget);
+
+    // Signal/Slots
+    connect(tab, SIGNAL(cellEntered(int,int)), SLOT(cellEntered(int,int)));
 
     connect(accounts_, SIGNAL(filterChanged()), SLOT(updateTable()));
+    connect(accounts_, SIGNAL(filterChanged()), SLOT(updateTree()));
 
     filter("");
+
+    setCurrentWidget(tab);
 }
 
 AccountSetView::~AccountSetView()
@@ -50,11 +69,13 @@ AccountSetView::~AccountSetView()
 
 void AccountSetView::copyCurrentPassword() const
 {
+    QTableWidget *t = const_cast<QTableWidget*>(tab);
+
     // At most one row, which is columnCount() cells,
     // can be selected
-    Q_ASSERT(selectedIndexes().size() <= columnCount());
+    Q_ASSERT(t->selectedItems().size() <= t->columnCount());
 
-    if(selectedIndexes().size() == 0)
+    if(t->selectedItems().size() == 0)
         QMessageBox(
                 QMessageBox::Critical,
                 tr("Nothing selected"),
@@ -64,8 +85,8 @@ void AccountSetView::copyCurrentPassword() const
     else
     {
         // Unfortunately selectedItems is not const, so we need to hack a bit here
-        const QTableWidgetItem *w = const_cast<AccountSetView*>(this)->selectedItems()[0];
-        Account a = accounts_->at(row(w));
+        const QTableWidgetItem *w = t->selectedItems()[0];
+        Account a = accounts_->at(tab->row(w));
         QApplication::clipboard()->setText(getPassword(a));
         QMessageBox(QMessageBox::Information,
                     tr("Success"),
@@ -83,7 +104,7 @@ void AccountSetView::cellEntered(int row, int column)
 
     hideVisiblePW();
 
-    item(row, column)->setText(getPassword(accounts_->at(row)));
+    tab->item(row, column)->setText(getPassword(accounts_->at(row)));
     currentlyVisiblePW = row;
     QTimer::singleShot(10000, this, SLOT(hideVisiblePW()));
 }
@@ -121,7 +142,7 @@ void AccountSetView::hideVisiblePW()
 {
     if(currentlyVisiblePW == -1) return;
 
-    QTableWidgetItem *it = item(currentlyVisiblePW, 2);
+    QTableWidgetItem *it = tab->item(currentlyVisiblePW, 2);
 
     QString s;
     for(int j = 0; j < accounts_->at(currentlyVisiblePW).max(); ++j)
@@ -133,7 +154,7 @@ void AccountSetView::hideVisiblePW()
 
 void AccountSetView::toggleLock(bool newstate)
 {
-    setMouseTracking(false);
+    tab->setMouseTracking(false);
 
     if(isLocked_ == true && newstate == false)
     {
@@ -158,7 +179,7 @@ void AccountSetView::toggleLock(bool newstate)
         }
          else
         {
-            setMouseTracking(true);
+            tab->setMouseTracking(true);
             mainPW_ = password;
             isLocked_ = false;
 
@@ -173,8 +194,8 @@ void AccountSetView::toggleLock(bool newstate)
 void AccountSetView::updateTable()
 {
     currentlyVisiblePW = -1;
-    clearContents();  // note: will delete the items
-    setRowCount(accounts_->rowCount());
+    tab->clearContents();  // note: will delete the items
+    tab->setRowCount(accounts_->rowCount());
 
     for(int i = 0; i < accounts_->rowCount(); ++i)
     {
@@ -183,18 +204,18 @@ void AccountSetView::updateTable()
         QTableWidgetItem *it;
 
         it = new QTableWidgetItem(a.site());
-        setItem(i, 0, it);
+        tab->setItem(i, 0, it);
 
         it = new QTableWidgetItem(a.user());
-        setItem(i, 1, it);
+        tab->setItem(i, 1, it);
 
         QString s;
         for(int j = 0; j < a.max(); ++j)
             s += "*";
         it = new QTableWidgetItem(s);
-        setItem(i, 2, it);
+        tab->setItem(i, 2, it);
 
         it = new QTableWidgetItem(a.note());
-        setItem(i, 3, it);
+        tab->setItem(i, 3, it);
     }
 }

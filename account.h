@@ -49,6 +49,7 @@ public:
     // not in this, copy the value from default
     void fillAccount(const Account &defaultAccount);
 
+    inline QString category() const { return category_; } // Category
     inline QString site() const { return site_; }
     inline QString user() const { return user_; }
     inline QString note() const { return note_; }
@@ -74,7 +75,7 @@ private:
     void raiseTokenizerError(const Tokenizer *t);
     void raiseWarning(const Tokenizer *t, const QString &msg);
 
-    QString site_, user_, note_, salt_;
+    QString category_, site_, user_, note_, salt_;
     int algo_, flags_, min_, max_, num_;
 
     QString errorMsg_;

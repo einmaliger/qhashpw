@@ -20,11 +20,15 @@
 #ifndef ACCOUNTSETVIEW_H
 #define ACCOUNTSETVIEW_H
 
-#include <QTableWidget>
+#include <QtCore/QString>
+#include <QtGui/QStackedWidget>
 
 #include "accountset.h"
 
-class AccountSetView : public QTableWidget
+class QTableWidget;
+class QTreeWidget;
+
+class AccountSetView : public QStackedWidget
 {
     Q_OBJECT
 
@@ -51,6 +55,8 @@ private slots:
     void updateTable();
 
 private:
+    QTableWidget *tab;
+    QTreeWidget *tree;
     AccountSet *accounts_;
     QString filename_;
     bool isLocked_;
