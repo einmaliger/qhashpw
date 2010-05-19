@@ -75,6 +75,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     // Create tool bars
     QToolBar *mainToolBar = new QToolBar;
+    mainToolBar->setMovable(false);
+    mainToolBar->setFloatable(false);
     mainToolBar->setIconSize(QSize(QStyle::PM_SmallIconSize,QStyle::PM_SmallIconSize));
     mainToolBar->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
     mainToolBar->addAction(lockAction);
