@@ -40,21 +40,30 @@ Account Account::operator=(const Account &a)
     return Account(a);
 }
 
-bool Account::readFrom(Tokenizer *t)
+bool Account::readFrom(Tokenizer *t, const DefaultAccount *def)
 {
-    struct {const QString key; QString *sval; int *ival;} var[] =
+    int version = (def == 0)?INVALID_INT_FIELD:def->version();
+
+    // internal flag that enforces that an option
+    // can only occur in the default account
+    static const int DEFONLY = 0x80;
+    static const int VERSIONMASK = 0x7F;
+
+    // version identifies the minimum verison
+    struct {const QString key; QString *sval; int *ival; int version;} var[] =
     {
-        {"category", &category_, NULL},
-        {"site", &site_, NULL},
-        {"user", &user_, NULL},
-        {"note", &note_, NULL},
-        {"salt", &salt_, NULL},
-        {"flag", reinterpret_cast<QString*>(&flags_), &flags_},
-        {"algo", reinterpret_cast<QString*>(&algo_), &algo_},
-        {"min", NULL, &min_},
-        {"max", NULL, &max_},
-        {"num", NULL, &num_},
-        {"", NULL, NULL}
+       {"category", &category_, NULL, 2},
+        {"site", &site_, NULL, 1},
+        {"user", &user_, NULL, 1},
+        {"note", &note_, NULL, 1},
+        {"salt", &salt_, NULL, 2},
+        {"flag", reinterpret_cast<QString*>(&flags_), &flags_, 1},
+        {"algo", reinterpret_cast<QString*>(&algo_), &algo_, 2},
+        {"min", NULL, &min_, 1},
+        {"max", NULL, &max_, 1},
+        {"num", NULL, &num_, 1},
+        {"version", NULL, &version, 2 | DEFONLY},
+        {"", NULL, NULL, INVALID_INT_FIELD}
     };
 
     if(t->error() == Tokenizer::EOF_ERROR) return false;
@@ -94,8 +103,33 @@ bool Account::readFrom(Tokenizer *t)
         for(i = 0; var[i].key != "" && var[i].key != key; ++i);
 
         if(var[i].key == "")
-            raiseWarning(t, tr("Unknown field \"%1\" - ignoring!").arg(key));
-        else if(t->tokT() == Tokenizer::TT_STRING && var[i].sval)
+        {
+            raiseWarning(t, tr("Unknown field \"%1\" - ignored!").arg(key));
+            goto endOfAssignment;
+        }
+
+        // We have an assignment to a known key (variable)
+        // First determine if it is valid here
+        if(var[i].version & DEFONLY)
+        {
+            if(def != 0)
+            {
+                raiseWarning(t, tr("Field \"%1\" not allowed here - ignored!").arg(var[i].key));
+                goto endOfAssignment;
+            }
+
+        }
+        else
+        {
+            if(def != 0 && (var[i].version & VERSIONMASK) > def->version())
+            {
+                raiseError(t, tr("Field \"%1\" not supported in this version").arg(var[i].key));
+                goto endOfAssignment;
+            }
+        }
+
+        // Okay, the assignment is valid
+        if(t->tokT() == Tokenizer::TT_STRING && var[i].sval)
         {
             // String assignment
             if(key == "flag")
@@ -103,45 +137,54 @@ bool Account::readFrom(Tokenizer *t)
                 if(flags_ != INVALID_INT_FIELD)
                     goto errorDoubleAssign;
                 else
-                 if(!doFlagAssignment(t, *t->tok.s))
-                    return false;
+                    if(!doFlagAssignment(t, *t->tok.s))
+                        return false;
             }
-             else if(key == "algo")
+            else if(key == "algo")
             {
-                 if(flags_ != INVALID_INT_FIELD)
-                     goto errorDoubleAssign;
-                 else
-                  if(!doAlgoAssignment(t, *t->tok.s))
-                     return false;
+                if(flags_ != INVALID_INT_FIELD)
+                    goto errorDoubleAssign;
+                else
+                    if(!doAlgoAssignment(t, *t->tok.s))
+                        return false;
             }
-             else
+            else
             {
-                 if(!var[i].sval->isNull())
-                     goto errorDoubleAssign;
-                 else
-                     *var[i].sval = *t->tok.s;
+                if(!var[i].sval->isNull())
+                    goto errorDoubleAssign;
+                else
+                    *var[i].sval = *t->tok.s;
             }
 
         }
-         else if(t->tokT() == Tokenizer::TT_NUMBER && var[i].ival)
+        else if(t->tokT() == Tokenizer::TT_NUMBER && var[i].ival)
         {
             // number assignment
             if(*var[i].ival != INVALID_INT_FIELD)
             {
-errorDoubleAssign:
+                errorDoubleAssign:
                 raiseError(t, tr("Component %1 was already set for account %2")
                            .arg(key)
                            .arg(site_.isNull()?tr("<unnamed account>"):site_));
                 return false;
             }
             *var[i].ival = t->tok.i;
+            if(key == "version")
+            {
+                Q_ASSERT(def == 0);
+                dynamic_cast<DefaultAccount*>(this)->version_ = version;
+            }
         }
-         else raiseError(t, tr("Wrong datatype for field %1").arg(key));
+        else raiseError(t, tr("Wrong datatype for field %1").arg(key));
 
+endOfAssignment:
         t->next();
         if(t->tokT() == Tokenizer::TT_CHAR && t->tok.c == ',')
             t->next();
     }
+
+    if(category_.isEmpty() && def != 0 && def->version() == 1)
+        category_ = def->currentCategory();
 
     return forceChar(t, '}', tr("Closing '}' expected"));
 }
@@ -254,4 +297,20 @@ void Account::raiseWarning(const Tokenizer *t, const QString &msg)
             tr("Warning in line %1: %2\n")
             .arg(t->lineno())
             .arg(msg));
+}
+
+DefaultAccount::DefaultAccount()
+: Account(), version_(1)
+{
+}
+
+DefaultAccount::DefaultAccount(const DefaultAccount &a)
+: Account(a), author_(a.author()), currentCategory_(a.currentCategory()),
+  version_(a.version())
+{
+}
+
+DefaultAccount DefaultAccount::operator=(const DefaultAccount &a)
+{
+    return DefaultAccount(a);
 }

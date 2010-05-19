@@ -50,7 +50,7 @@ bool AccountSet::readFrom(Tokenizer *t)
 
     all_.clear();
 
-    bool noError = defaultAccount_.readFrom(t);
+    bool noError = defaultAccount_.readFrom(t, 0);
 
     s += defaultAccount_.errorMsg();
 
@@ -58,7 +58,7 @@ bool AccountSet::readFrom(Tokenizer *t)
     {
         Account a;
         if(t->error() == Tokenizer::EOF_ERROR) break;
-        noError = a.readFrom(t);
+        noError = a.readFrom(t, &defaultAccount_);
         s += a.errorMsg();
         all_.append(a);
     }
