@@ -17,6 +17,7 @@
  * along with qhashpw.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <QtCore/QHash>
 #include <QtCore/QTimer>
 #include <QtGui/QApplication>
 #include <QtGui/QBoxLayout>
@@ -59,7 +60,7 @@ AccountSetView::AccountSetView(AccountSet *as, const QString &filename)
 
     filter("");
 
-    setCurrentWidget(tab);
+    setCurrentWidget(detailWidget);
 }
 
 AccountSetView::~AccountSetView()
@@ -217,5 +218,60 @@ void AccountSetView::updateTable()
 
         it = new QTableWidgetItem(a.note());
         tab->setItem(i, 3, it);
+    }
+}
+
+void AccountSetView::updateTree()
+{
+    tree->clear();
+
+    QHash<const QString&,QTreeWidgetItem*> cats; // categories
+
+    for(int i = 0; i < accounts_->rowCount(); ++i)
+    {
+        Account a = accounts_->at(i);
+
+        QTreeWidgetItem *parent;
+
+        if(!cats.contains(a.category()))
+        {
+            parent = new QTreeWidgetItem(tree);
+            parent->setExpanded(true);
+            parent->setText(0, a.category().isEmpty()?tr("General"):a.category());
+            cats[a.category()] = parent;
+        }
+         else parent = cats[a.category()];
+
+        QTreeWidgetItem *it = new QTreeWidgetItem(parent);
+        it->setText(0, a.site());
+        it->setData(1, Qt::UserRole, i);
+
+        // should the "user" also be displayed in the list?
+        it->setData(2, Qt::UserRole, 0);
+
+        // See if there are other entries with the same "site" as
+        // the current one and if so, append the username to make
+        // the list entries unique
+        for(int i = 0; i < parent->childCount(); ++i)
+        {
+            QTreeWidgetItem *b = parent->child(i);
+
+            if(b == it) continue;
+
+            Account bAccount = accounts_->at(b->data(1, Qt::UserRole).toInt());
+
+            if(bAccount.site() == a.site() && b->data(2, Qt::UserRole).toInt() == 0)
+            {
+                b->setText(0, tr("%1 (%2)").arg(bAccount.site()).arg(bAccount.user()));
+                b->setData(2, Qt::UserRole, 1);
+            }
+
+            if(bAccount.site() == a.site())
+            {
+                it->setText(0, tr("%1 (%2)").arg(a.site()).arg(a.user()));
+                it->setData(2, Qt::UserRole, 1);
+                break;
+            }
+        }
     }
 }

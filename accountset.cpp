@@ -64,6 +64,7 @@ bool AccountSet::readFrom(Tokenizer *t)
                s.startsWith("##"))
             {
                 s = s.remove('#').trimmed().toLower();
+                s[0] = s[0].toUpper();
                 defaultAccount_.setCurrentCategory(s);
             }
         }

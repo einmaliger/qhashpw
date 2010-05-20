@@ -53,6 +53,7 @@ private slots:
     void filter(const QString &searchPhrase);
     QString getPassword(const Account &a) const;
     void updateTable();
+    void updateTree();
 
 private:
     QTableWidget *tab;
