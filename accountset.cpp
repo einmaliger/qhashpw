@@ -56,6 +56,17 @@ bool AccountSet::readFrom(Tokenizer *t)
 
     while(noError)
     {
+        if(t->tokT() == Tokenizer::TT_COMMENT)
+        {
+            QString s(*t->tok.s);
+            t->next();
+            if(defaultAccount_.version() == 1 &&
+               s.startsWith("##"))
+            {
+                s = s.remove('#').trimmed().toLower();
+                defaultAccount_.setCurrentCategory(s);
+            }
+        }
         Account a;
         if(t->error() == Tokenizer::EOF_ERROR) break;
         noError = a.readFrom(t, &defaultAccount_);

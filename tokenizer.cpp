@@ -37,7 +37,8 @@ Tokenizer::Tokenizer(QFile *f)
 
 Tokenizer::~Tokenizer()
 {
-    if(tokT_ == TT_STRING) delete tok.s;
+    if(tokT_ == TT_STRING || tokT_ == TT_COMMENT)
+        delete tok.s;
 }
 
 QString Tokenizer::currentTokenDesc() const
@@ -55,26 +56,42 @@ QString Tokenizer::currentTokenDesc() const
                 isprint(tok.c)?
                 (isspace(tok.c)?
                  ' ':tok.c):'.');
+      case TT_COMMENT:
+        return tr("<comment, \"%1\">").arg(*tok.s);
     }
 }
 
-bool Tokenizer::next()
+bool Tokenizer::next(bool commentIsToken)
 {
     char c;                    // The current character
     bool incomment = false;    // Are we in a comment?
     const int MAXBUF = 2<<20;  // Maximum buffer size. A megabyte string is probably not useful
 
-    // De-initialize the old token
-    if(tokT_ == TT_STRING) delete tok.s;
+    QString buffer;
 
-    // Skip all whitespace and comments
+    // De-initialize the old token
+    if(tokT_ == TT_STRING || tokT_ == TT_COMMENT) delete tok.s;
+
+    tokT_ = TT_NOTHING;
+
+    // Skip all whitespace and comments (if required)
     do if(!f_->getChar(&c)) c = 0;
       else if(c == '\n')
       {
           lineno_++;
+          if(incomment && commentIsToken)
+          {
+              tokT_ = TT_COMMENT;
+              tok.s = new QString(buffer);
+              return true;
+          }
           incomment = false;
       }
-      else if(c == '#') incomment = true;
+      else
+      {
+          buffer += c;
+          if(c == '#') incomment = true;
+      }
     while(!f_->atEnd() && (incomment || isspace(c)));
 
     if(f_->atEnd())
@@ -141,11 +158,11 @@ bool Tokenizer::next()
     return true;
 }
 
-bool Tokenizer::forceCharToken(char c)
+bool Tokenizer::forceCharToken(char c, bool commentIsToken)
 {
     if(tokT_ == TT_CHAR && tok.c == c)
     {
-        next();
+        next(commentIsToken);
         return true;
     }
     error_ = FORCE_CHAR_ERROR;

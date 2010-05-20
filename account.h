@@ -75,7 +75,11 @@ public:
 protected:
     bool doAlgoAssignment(const Tokenizer *t, const QString &val);
     bool doFlagAssignment(const Tokenizer *t, const QString &val);
-    bool forceChar(Tokenizer *t, char c, const QString &errorMsg);
+
+    // If current token is the character c, advance to the next token
+    // (is commentIsToken, then that next token might be a comment)
+    // else raise the given errorMsg
+    bool forceChar(Tokenizer *t, char c, const QString &errorMsg, bool commentIsToken = false);
     void raiseError(const Tokenizer *t, const QString &msg);
     void raiseTokenizerError(const Tokenizer *t);
     void raiseWarning(const Tokenizer *t, const QString &msg);

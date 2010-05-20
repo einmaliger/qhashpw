@@ -39,7 +39,8 @@ public:
         TT_NOTHING,
         TT_NUMBER,
         TT_STRING,
-        TT_CHAR
+        TT_CHAR,
+        TT_COMMENT
     };
 
     inline Error error() const { return error_;}
@@ -62,10 +63,10 @@ public:
 
     // Advance to the next token
     // Returns true on success
-    bool next();
+    bool next(bool commentIsToken = false);
 
     // Advance to the next token if the curren token is 'c'
-    bool forceCharToken(char c);
+    bool forceCharToken(char c, bool commentIsToken = false);
 
     // Print a short description about the current token
     QString currentTokenDesc() const;

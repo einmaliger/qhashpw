@@ -186,7 +186,9 @@ endOfAssignment:
     if(category_.isEmpty() && def != 0 && def->version() == 1)
         category_ = def->currentCategory();
 
-    return forceChar(t, '}', tr("Closing '}' expected"));
+    // enforce the closing '}' and advance to the next token
+    // a comment may now be allowed
+    return forceChar(t, '}', tr("Closing '}' expected"), true);
 }
 
 void Account::fillAccount(const Account &defaultAccount)
@@ -241,9 +243,9 @@ bool Account::doFlagAssignment(const Tokenizer *t, const QString &val)
     return true;
 }
 
-bool Account::forceChar(Tokenizer *t, char c, const QString &errorMsg)
+bool Account::forceChar(Tokenizer *t, char c, const QString &errorMsg, bool commentIsToken)
 {
-    if(!t->forceCharToken(c))
+    if(!t->forceCharToken(c, commentIsToken))
     {
         if(t->error() == Tokenizer::FORCE_CHAR_ERROR)
             raiseError(t, errorMsg);
