@@ -35,32 +35,32 @@ AccountSetView::AccountSetView(AccountSet *as, const QString &filename)
     : QStackedWidget(), accounts_(as), filename_(filename), isLocked_(true)
 {
     // Table/List view
-    tab = new QTableWidget(as->rowCount(),4);
+    listView = new QTableWidget(as->rowCount(),4);
     QStringList headers;
     headers << tr("Site") << tr("User") << tr("Password") << tr("Note");
-    tab->setHorizontalHeaderLabels(headers);
-    tab->setSelectionBehavior(QAbstractItemView::SelectRows);
-    tab->setSelectionMode(QAbstractItemView::SingleSelection);
+    listView->setHorizontalHeaderLabels(headers);
+    listView->setSelectionBehavior(QAbstractItemView::SelectRows);
+    listView->setSelectionMode(QAbstractItemView::SingleSelection);
 
-    addWidget(tab);
+    addWidget(listView);
 
     // Detail view
-    QWidget *detailWidget = new QWidget;
+    treeView = new QWidget;
     QHBoxLayout *lay = new QHBoxLayout;
     tree = new QTreeWidget;
     lay->addWidget(tree);
-    detailWidget->setLayout(lay);
-    addWidget(detailWidget);
+    treeView->setLayout(lay);
+    addWidget(treeView);
 
     // Signal/Slots
-    connect(tab, SIGNAL(cellEntered(int,int)), SLOT(cellEntered(int,int)));
+    connect(listView, SIGNAL(cellEntered(int,int)), SLOT(cellEntered(int,int)));
 
     connect(accounts_, SIGNAL(filterChanged()), SLOT(updateTable()));
     connect(accounts_, SIGNAL(filterChanged()), SLOT(updateTree()));
 
     filter("");
 
-    setCurrentWidget(detailWidget);
+    setCurrentWidget(treeView);
 }
 
 AccountSetView::~AccountSetView()
@@ -68,9 +68,19 @@ AccountSetView::~AccountSetView()
     delete accounts_;
 }
 
+bool AccountSetView::isListView()
+{
+    return currentWidget() == dynamic_cast<QWidget*>(listView);
+}
+
+bool AccountSetView::isTreeView()
+{
+    return currentWidget() == treeView;
+}
+
 void AccountSetView::copyCurrentPassword() const
 {
-    QTableWidget *t = const_cast<QTableWidget*>(tab);
+    QTableWidget *t = const_cast<QTableWidget*>(listView);
 
     // At most one row, which is columnCount() cells,
     // can be selected
@@ -87,7 +97,7 @@ void AccountSetView::copyCurrentPassword() const
     {
         // Unfortunately selectedItems is not const, so we need to hack a bit here
         const QTableWidgetItem *w = t->selectedItems()[0];
-        Account a = accounts_->at(tab->row(w));
+        Account a = accounts_->at(listView->row(w));
         QApplication::clipboard()->setText(getPassword(a));
         QMessageBox(QMessageBox::Information,
                     tr("Success"),
@@ -105,7 +115,7 @@ void AccountSetView::cellEntered(int row, int column)
 
     hideVisiblePW();
 
-    tab->item(row, column)->setText(getPassword(accounts_->at(row)));
+    listView->item(row, column)->setText(getPassword(accounts_->at(row)));
     currentlyVisiblePW = row;
     QTimer::singleShot(10000, this, SLOT(hideVisiblePW()));
 }
@@ -143,7 +153,7 @@ void AccountSetView::hideVisiblePW()
 {
     if(currentlyVisiblePW == -1) return;
 
-    QTableWidgetItem *it = tab->item(currentlyVisiblePW, 2);
+    QTableWidgetItem *it = listView->item(currentlyVisiblePW, 2);
 
     QString s;
     for(int j = 0; j < accounts_->at(currentlyVisiblePW).max(); ++j)
@@ -153,9 +163,19 @@ void AccountSetView::hideVisiblePW()
     currentlyVisiblePW = -1;
 }
 
+void AccountSetView::switchToList()
+{
+    setCurrentWidget(listView);
+}
+
+void AccountSetView::switchToTree()
+{
+    setCurrentWidget(treeView);
+}
+
 void AccountSetView::toggleLock(bool newstate)
 {
-    tab->setMouseTracking(false);
+    listView->setMouseTracking(false);
 
     if(isLocked_ == true && newstate == false)
     {
@@ -180,7 +200,7 @@ void AccountSetView::toggleLock(bool newstate)
         }
          else
         {
-            tab->setMouseTracking(true);
+            listView->setMouseTracking(true);
             mainPW_ = password;
             isLocked_ = false;
 
@@ -195,8 +215,8 @@ void AccountSetView::toggleLock(bool newstate)
 void AccountSetView::updateTable()
 {
     currentlyVisiblePW = -1;
-    tab->clearContents();  // note: will delete the items
-    tab->setRowCount(accounts_->rowCount());
+    listView->clearContents();  // note: will delete the items
+    listView->setRowCount(accounts_->rowCount());
 
     for(int i = 0; i < accounts_->rowCount(); ++i)
     {
@@ -205,19 +225,19 @@ void AccountSetView::updateTable()
         QTableWidgetItem *it;
 
         it = new QTableWidgetItem(a.site());
-        tab->setItem(i, 0, it);
+        listView->setItem(i, 0, it);
 
         it = new QTableWidgetItem(a.user());
-        tab->setItem(i, 1, it);
+        listView->setItem(i, 1, it);
 
         QString s;
         for(int j = 0; j < a.max(); ++j)
             s += "*";
         it = new QTableWidgetItem(s);
-        tab->setItem(i, 2, it);
+        listView->setItem(i, 2, it);
 
         it = new QTableWidgetItem(a.note());
-        tab->setItem(i, 3, it);
+        listView->setItem(i, 3, it);
     }
 }
 

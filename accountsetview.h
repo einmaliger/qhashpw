@@ -39,10 +39,14 @@ public:
     AccountSet *accounts() { return accounts_; }
     QString filename() const { return filename_; }
     bool isLocked() { return isLocked_; }
+    bool isListView();
+    bool isTreeView();
 
 public slots:
     void copyCurrentPassword() const;
     void hideVisiblePW();
+    void switchToList();
+    void switchToTree();
     void toggleLock(bool newstate);
 
 private:
@@ -56,7 +60,8 @@ private slots:
     void updateTree();
 
 private:
-    QTableWidget *tab;
+    QTableWidget *listView;
+    QWidget *treeView;
     QTreeWidget *tree;
     AccountSet *accounts_;
     QString filename_;

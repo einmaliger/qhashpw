@@ -68,6 +68,11 @@ MainWindow::MainWindow(QWidget *parent)
     toClipboardAction->setToolTip(tr("Copy the selected password to the clipboard"));
     // enabled will be set in updateCurrentSet
 
+    viewActions = new QActionGroup(this);
+    toTreeViewAction = new QAction(QIcon("img/view_list_tree.svgz"), tr("Tree View"), viewActions);
+    toListViewAction = new QAction(QIcon("img/view_list_text.svgz"), tr("List View"), viewActions);
+    // enabled will be set in updateCurrentSet
+
     QAction *aboutAction = new QAction(tr("&About"), this);
 
     QAction *aboutQtAction = new QAction(tr("About &Qt"), this);
@@ -81,6 +86,9 @@ MainWindow::MainWindow(QWidget *parent)
     mainToolBar->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
     mainToolBar->addAction(lockAction);
     mainToolBar->addAction(toClipboardAction);
+    mainToolBar->addSeparator();
+    mainToolBar->addAction(toTreeViewAction);
+    mainToolBar->addAction(toListViewAction);
 
     addToolBar(Qt::TopToolBarArea, mainToolBar);
     addToolBarBreak();
@@ -101,6 +109,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(center, SIGNAL(currentChanged(int)), SLOT(updateCurrentSet(int)));
     connect(lockAction, SIGNAL(toggled(bool)), SLOT(lockActionToggled(bool)));
     connect(toClipboardAction, SIGNAL(triggered()),SLOT(toClipboardActionTriggered()));
+    connect(viewActions, SIGNAL(triggered(QAction*)), SLOT(viewActionTriggered(QAction *)));
 
     // Menus
     QMenu *fileMenu = menuBar()->addMenu(tr("&File"));
@@ -216,6 +225,9 @@ void MainWindow::updateCurrentSet(int)
     lockAction->setEnabled(enabled);
 
     toClipboardAction->setEnabled(!locked);
+    viewActions->setEnabled(enabled);
+    toTreeViewAction->setChecked(enabled && center->currentSet()->isTreeView());
+    toTreeViewAction->setChecked(enabled && center->currentSet()->isListView());
 }
 
 // Taken from Qt example, slightly modified
@@ -239,3 +251,13 @@ void MainWindow::updateRecentFileActions()
     separatorAction->setVisible(numRecentFiles > 0);
 }
 
+void MainWindow::viewActionTriggered(QAction *a)
+{
+    AccountSetView *s = center->currentSet();
+    Q_ASSERT(s != 0);
+    if(a == toTreeViewAction)
+        s->switchToTree();
+    else
+        s->switchToList();
+
+}

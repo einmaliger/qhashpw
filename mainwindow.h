@@ -22,6 +22,7 @@
 
 #include <QtCore/QList>
 #include <QtGui/QAction>
+#include <QtGui/QActionGroup>
 #include <QtGui/QCheckBox>
 #include <QtGui/QMainWindow>
 #include <QtGui/QTableWidget>
@@ -48,6 +49,7 @@ private slots:
     void open();
     void openRecentFile();
     void toClipboardActionTriggered();
+    void viewActionTriggered(QAction *);
     void updateCurrentSet(int unused = -1);
 
 private:
@@ -60,6 +62,9 @@ private:
     QAction *lockAction;
     QList<QAction*> recentFileActions;
     QAction *toClipboardAction;
+    QAction *toTreeViewAction;
+    QAction *toListViewAction;
+    QActionGroup *viewActions;
     QAction *separatorAction; // for recentFilesMenu
 
 signals:
