@@ -63,14 +63,14 @@ MainWindow::MainWindow(QWidget *parent)
     exitAction->setShortcut(QKeySequence::Quit);
     connect(exitAction, SIGNAL(triggered()), SLOT(close()));
 
-    toClipboardAction = new QAction(QIcon("img/toclipboard.svgz"), tr("Copy"), this);
+    toClipboardAction = new QAction(QIcon(":/img/toclipboard.svgz"), tr("Copy"), this);
     toClipboardAction->setShortcut(QKeySequence::Copy);
     toClipboardAction->setToolTip(tr("Copy the selected password to the clipboard"));
     // enabled will be set in updateCurrentSet
 
     viewActions = new QActionGroup(this);
-    toTreeViewAction = new QAction(QIcon("img/view_list_tree.svgz"), tr("Tree View"), viewActions);
-    toListViewAction = new QAction(QIcon("img/view_list_text.svgz"), tr("List View"), viewActions);
+    toTreeViewAction = new QAction(QIcon(":/img/view_list_tree.svgz"), tr("Tree View"), viewActions);
+    toListViewAction = new QAction(QIcon(":/img/view_list_text.svgz"), tr("List View"), viewActions);
     // enabled will be set in updateCurrentSet
 
     QAction *aboutAction = new QAction(tr("&About"), this);
@@ -220,7 +220,7 @@ void MainWindow::updateCurrentSet(int)
     }
 
     lockAction->setChecked(locked);
-    lockAction->setIcon(locked?QIcon("img/locked.svg"):QIcon("img/unlocked.svg"));
+    lockAction->setIcon(locked?QIcon(":/img/locked.svg"):QIcon(":/img/unlocked.svg"));
     lockAction->setIconText(locked?tr("Locked"):tr("Unlocked"));
     lockAction->setEnabled(enabled);
 

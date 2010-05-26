@@ -1,0 +1,9 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource>
+	<file>img/locked.svg</file>
+	<file>img/unlocked.svg</file>
+	<file>img/toclipboard.svgz</file>
+	<file>img/view_list_text.svgz</file>
+	<file>img/view_list_tree.svgz</file>
+</qresource>
+</RCC>

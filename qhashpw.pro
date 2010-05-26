@@ -19,4 +19,5 @@ HEADERS += mainwindow.h \
     mytabwidget.h \
     accountsetview.h
 FORMS += 
+RESOURCES = qhashpw.qrc
 LIBS += -lssl
