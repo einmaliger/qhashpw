@@ -139,7 +139,7 @@ void MainWindow::addAccountSet(const QString &filename)
 {
     QFileInfo fi(filename);
     QFile f(fi.absoluteFilePath());
-    f.open(QIODevice::ReadOnly);
+    f.open(QIODevice::ReadOnly | QIODevice::Text);
     Tokenizer *t = new Tokenizer(&f); // deleted at end of function
     if(t->error() != Tokenizer::NO_ERROR)
         QMessageBox(QMessageBox::Critical, tr("File error"), tr("The input file could not be opened"), QMessageBox::Ok).exec();
