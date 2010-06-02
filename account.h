@@ -20,8 +20,9 @@
 #ifndef ACCOUNT_H
 #define ACCOUNT_H
 
-#include <QObject>
+#include <QFile>
 #include <QString>
+#include <QTextStream>
 
 #include "tokenizer.h"
 
@@ -29,6 +30,8 @@ class DefaultAccount;
 
 class Account : public QObject
 {
+    Q_OBJECT
+
 public:
     // Special value to show that a field has not been set
     static const int INVALID_INT_FIELD;
@@ -53,6 +56,8 @@ public:
     // For every field that is set in default, but
     // not in this, copy the value from default
     void fillAccount(const Account &defaultAccount);
+
+    void saveTo(QTextStream &f, int version) const;
 
     inline QString category() const { return category_; }
     inline QString site() const { return site_; }
@@ -90,8 +95,27 @@ protected:
     QString errorMsg_;
 };
 
-class DefaultAccount: public Account
+class AccountSaver
 {
+public:
+    AccountSaver(QTextStream &out, const Account *a, int version);
+    void exec();
+
+private:
+    void rawWrite(const QString &key, const QString &value);
+    void writeNumber(int ver, const QString &key, int value);
+    void writeString(int ver, const QString &key, const QString &value);
+
+    const Account *a;
+    bool firstAssignment;
+    QTextStream &out;
+    int version;
+};
+
+class DefaultAccount : public Account
+{
+    Q_OBJECT
+
     friend class Account;
 
 public:

@@ -66,6 +66,7 @@ private:
     QList<Account*> filtered_;
 
     QString errorMsg_;
+    QString filename_;
 
 signals:
     void filterChanged();

@@ -48,6 +48,8 @@ bool AccountSet::readFrom(Tokenizer *t)
 {
     QString s;
 
+    filename_ = t->filename();
+
     all_.clear();
 
     bool noError = defaultAccount_.readFrom(t, 0);

@@ -301,6 +301,109 @@ void Account::raiseWarning(const Tokenizer *t, const QString &msg)
             .arg(msg));
 }
 
+void Account::saveTo(QTextStream &f, int version) const
+{
+    AccountSaver *saver = new AccountSaver(f, this, version);
+    saver->exec();
+    delete saver;
+}
+
+AccountSaver::AccountSaver(QTextStream &out, const Account *a, int version)
+: a(a), firstAssignment(true), out(out), version(version)
+{}
+
+void AccountSaver::exec()
+{
+    const DefaultAccount *def = qobject_cast<const DefaultAccount*>(a);
+
+    QString v;
+
+    out << "{\n";
+
+    if(def && version == 2)
+    {
+        QString s = QString(
+                "\tversion = \"%1\",\n"
+                "\tauthor = \"%2\"")
+               .arg(def->version())
+               .arg(def->author());
+        firstAssignment = false;
+        out << s;
+    }
+
+    writeString(1, "site", a->site());
+    writeString(1, "user", a->user());
+    writeString(2, "category", a->category());
+    writeString(1, "note", a->note());
+
+    v.clear();
+    switch(a->flags())
+    {
+        case FLAGS_PRINT: v = "print"; break;
+        case FLAGS_ALPHA: v = "alpha"; break;
+        case FLAGS_ALNUM: v = "alnum"; break;
+        case FLAGS_LOWER: v = "lower"; break;
+    }
+    writeString(1, "flag", v);
+
+    writeNumber(1, "min", a->min());
+    writeNumber(1, "max", a->max());
+    writeNumber(1, "num", a->num());
+
+    v.clear();
+    switch(a->algo())
+    {
+        case HASH_RIPEMD160: v = "ripemd160"; break;
+        case HASH_SHA1:      v = "sha1"; break;
+        case HASH_DSS1:      v = "dss1"; break;
+        case HASH_MD5:       v = "md5"; break;
+    }
+    writeString(2, "algo", v);
+
+    writeString(2, "salt", a->salt());
+
+    out << "\n}\n";
+}
+
+void AccountSaver::rawWrite(const QString &key, const QString &value)
+{
+    if(!value.isNull())
+    {
+        if(!firstAssignment)
+        {
+            out << ",\n";
+            firstAssignment = false;
+        }
+        out << "\t" << key << " = " << value;
+    }
+}
+
+void AccountSaver::writeNumber(int ver, const QString &key, int value)
+{
+    if(version < ver) return;
+    if(value == Account::INVALID_INT_FIELD) return;
+    QString v;
+    v.setNum(value);
+    rawWrite(key, v);
+}
+
+void AccountSaver::writeString(int ver, const QString &key, const QString &value)
+{
+    if(version < ver) return;
+    if(value.isNull()) return;
+
+    bool needParen = !value[0].isLetter();
+
+    if(!needParen)
+    {
+        foreach(QChar c, value)
+            if(!(c.isLetterOrNumber())) needParen = true;
+    }
+
+    QString val = needParen?"\""+value+"\"":value;
+    rawWrite(key, val);
+}
+
 DefaultAccount::DefaultAccount()
 : Account(), version_(1)
 {
