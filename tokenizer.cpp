@@ -61,6 +61,11 @@ QString Tokenizer::currentTokenDesc() const
     }
 }
 
+const QString Tokenizer::filename() const
+{
+    return f_->fileName();
+}
+
 bool Tokenizer::next(bool commentIsToken)
 {
     char c;                    // The current character

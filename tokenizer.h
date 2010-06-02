@@ -52,8 +52,10 @@ public:
         char c;
     } tok;
 
+    const QString filename() const;
+
     // Line number of the current token
-    inline int lineno() const { return lineno_;}
+    inline int lineno() const { return lineno_; }
 
     // Initializes tokenizer with the given file
     Tokenizer(QFile *filename);
