@@ -57,8 +57,6 @@ private:
     MyTabWidget *center;
     QLineEdit *searchPhrase;
 
-    AccountSet *accounts_;
-
     QAction *lockAction;
     QList<QAction*> recentFileActions;
     QAction *toClipboardAction;
