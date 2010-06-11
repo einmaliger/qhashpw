@@ -22,8 +22,11 @@
 #include <QtGui/QApplication>
 #include <QtGui/QBoxLayout>
 #include <QtGui/QClipboard>
+#include <QtGui/QFormLayout>
 #include <QtGui/QInputDialog>
+#include <QtGui/QLabel>
 #include <QtGui/QMessageBox>
+#include <QtGui/QPushButton>
 #include <QtGui/QTableWidget>
 #include <QtGui/QTableWidgetItem>
 #include <QtGui/QTreeWidget>
@@ -48,12 +51,20 @@ AccountSetView::AccountSetView(AccountSet *as, const QString &filename)
     treeView = new QWidget;
     QHBoxLayout *lay = new QHBoxLayout;
     tree = new QTreeWidget;
+    tree->setHeaderLabel(tr("Accounts"));
+    tree->setSelectionBehavior(QAbstractItemView::SelectRows);
+    tree->setSelectionMode(QAbstractItemView::SingleSelection);
     lay->addWidget(tree);
+    QWidget *detail = createDetailView();
+    lay->addWidget(detail);
     treeView->setLayout(lay);
     addWidget(treeView);
 
     // Signal/Slots
     connect(listView, SIGNAL(cellEntered(int,int)), SLOT(cellEntered(int,int)));
+    connect(tree, SIGNAL(currentItemChanged(QTreeWidgetItem*,QTreeWidgetItem*)),
+                  SLOT(currentItemChanged(QTreeWidgetItem*,QTreeWidgetItem*)));
+    connect(detailInfoShow, SIGNAL(clicked()), SLOT(detailInfoShowClicked()));
 
     connect(accounts_, SIGNAL(filterChanged()), SLOT(updateTable()));
     connect(accounts_, SIGNAL(filterChanged()), SLOT(updateTree()));
@@ -76,6 +87,14 @@ bool AccountSetView::isListView()
 bool AccountSetView::isTreeView()
 {
     return currentWidget() == treeView;
+}
+
+QString AccountSetView::blindedPassword(const Account &a) const
+{
+    QString s;
+    for(int j = 0; j < a.max(); ++j)
+        s += "*";
+    return s;
 }
 
 void AccountSetView::copyCurrentPassword() const
@@ -120,6 +139,58 @@ void AccountSetView::cellEntered(int row, int column)
     QTimer::singleShot(10000, this, SLOT(hideVisiblePW()));
 }
 
+QWidget *AccountSetView::createDetailView()
+{
+    QTabWidget *d = new QTabWidget;
+
+    // Page 1
+    QWidget *w = new QWidget;
+    QVBoxLayout *lmain = new QVBoxLayout;
+    QFormLayout *l = new QFormLayout;
+    detailInfoSite = new QLabel;
+    l->addRow(tr("Site:"), detailInfoSite);
+    detailInfoUser = new QLabel;
+    l->addRow(tr("User:"), detailInfoUser);
+    detailInfoPassword = new QLabel;
+    l->addRow(tr("Password:"), detailInfoPassword);
+    detailInfoShow = new QPushButton(tr("Show"));
+    detailInfoShow->setEnabled(!isLocked_);
+    l->addRow("", detailInfoShow);
+    lmain->addLayout(l);
+    lmain->addStretch();
+    w->setLayout(lmain);
+    d->addTab(w, tr("Info"));
+    return d;
+}
+
+void AccountSetView::currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *)
+{
+    Q_ASSERT(current != 0);
+
+    hideVisiblePW();
+
+    const Account a = accounts_->at(current->data(1, Qt::UserRole).toInt());
+    detailInfoSite->setText(a.site());
+    detailInfoUser->setText(a.user());
+    detailInfoPassword->setText(blindedPassword(a));
+    detailInfoShow->setEnabled(!isLocked_);
+}
+
+void AccountSetView::detailInfoShowClicked()
+{
+    if(tree->currentItem() == 0) return;
+
+    int row = tree->currentItem()->data(1, Qt::UserRole).toInt();
+
+    cellEntered(row, 2);
+
+    detailInfoShow->setDown(true);
+
+    detailInfoPassword->setText(getPassword(accounts_->at(row)));
+    currentlyVisiblePW = row;
+    QTimer::singleShot(10000, this, SLOT(hideVisiblePW()));
+}
+
 void AccountSetView::filter(const QString &searchPhrase)
 {
     accounts_->filter(searchPhrase);
@@ -155,10 +226,10 @@ void AccountSetView::hideVisiblePW()
 
     QTableWidgetItem *it = listView->item(currentlyVisiblePW, 2);
 
-    QString s;
-    for(int j = 0; j < accounts_->at(currentlyVisiblePW).max(); ++j)
-        s += "*";
+    QString s = blindedPassword(accounts_->at(currentlyVisiblePW));
     it->setText(s);
+    detailInfoPassword->setText(s);
+    detailInfoShow->setDown(false);
 
     currentlyVisiblePW = -1;
 }
@@ -176,6 +247,7 @@ void AccountSetView::switchToTree()
 void AccountSetView::toggleLock(bool newstate)
 {
     listView->setMouseTracking(false);
+    detailInfoShow->setEnabled(false);
 
     if(isLocked_ == true && newstate == false)
     {
@@ -201,6 +273,7 @@ void AccountSetView::toggleLock(bool newstate)
          else
         {
             listView->setMouseTracking(true);
+            detailInfoShow->setEnabled(true);
             mainPW_ = password;
             isLocked_ = false;
 

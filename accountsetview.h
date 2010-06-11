@@ -25,8 +25,11 @@
 
 #include "accountset.h"
 
+class QLabel;
+class QPushButton;
 class QTableWidget;
 class QTreeWidget;
+class QTreeWidgetItem;
 
 class AccountSetView : public QStackedWidget
 {
@@ -50,10 +53,14 @@ public slots:
     void toggleLock(bool newstate);
 
 private:
+    QString blindedPassword(const Account &a) const;
     const QString &mainPW() const { return mainPW_; }
 
 private slots:
     void cellEntered(int row, int column);
+    QWidget *createDetailView();
+    void currentItemChanged(QTreeWidgetItem*, QTreeWidgetItem*);
+    void detailInfoShowClicked();
     void filter(const QString &searchPhrase);
     QString getPassword(const Account &a) const;
     void updateTable();
@@ -62,6 +69,8 @@ private slots:
 private:
     QTableWidget *listView;
     QWidget *treeView;
+    QLabel *detailInfoSite, *detailInfoUser, *detailInfoPassword;
+    QPushButton *detailInfoShow;
     QTreeWidget *tree;
     AccountSet *accounts_;
     QString filename_;
