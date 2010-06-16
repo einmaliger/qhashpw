@@ -17,9 +17,11 @@
  * along with qhashpw.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <QtCore/QFile>
 #include <QtCore/QFileInfo>
 #include <QtCore/QSettings>
 #include <QtCore/QStringList>
+#include <QtCore/QTextStream>
 #include <QtCore/QTimer>
 #include <QtGui/QApplication> // for qApp
 #include <QtGui/QFileDialog>
@@ -45,6 +47,15 @@ MainWindow::MainWindow(QWidget *parent)
     QAction *openAction = new QAction(tr("&Open..."), this);
     openAction->setShortcut(QKeySequence::Open);
     connect(openAction, SIGNAL(triggered()), SLOT(open()));
+
+    fileWriteActions = new QActionGroup(this);
+    QAction *saveAction = new QAction(tr("&Save"), fileWriteActions);
+    saveAction->setShortcut(QKeySequence::Save);
+    connect(saveAction, SIGNAL(triggered()), SLOT(save()));
+
+    QAction *saveAsAction = new QAction(tr("Save &As ..."), fileWriteActions);
+    saveAsAction->setShortcut(QKeySequence::SaveAs);
+    connect(saveAsAction, SIGNAL(triggered()), SLOT(saveAs()));
 
     lockAction = new QAction(tr("Locked"), this);
     lockAction->setCheckable(true);
@@ -114,6 +125,7 @@ MainWindow::MainWindow(QWidget *parent)
     // Menus
     QMenu *fileMenu = menuBar()->addMenu(tr("&File"));
     fileMenu->addAction(openAction);
+    fileMenu->addActions(fileWriteActions->actions());
     fileMenu->addAction(lockAction);
     separatorAction = fileMenu->addSeparator();
     for(int i = 0; i < maxRecentFiles; ++i)
@@ -148,12 +160,12 @@ void MainWindow::addAccountSet(const QString &filename)
 
     if(accounts->readFrom(t))
     {
-        AccountSetView *asv = new AccountSetView(accounts, filename); // transfers possession of accounts to asv!
+        AccountSetView *asv = new AccountSetView(accounts, fi.fileName()); // transfers possession of accounts to asv!
 
         connect(this, SIGNAL(filterChanged(QString)), asv, SLOT(filter(QString)));
         connect(asv, SIGNAL(lockStateChanged()), SLOT(updateCurrentSet()));
 
-        center->addTab(asv, fi.fileName());
+        center->addAccounts(asv);
     }
      else
     {
@@ -162,6 +174,25 @@ void MainWindow::addAccountSet(const QString &filename)
     }
 
     delete t;
+}
+
+void MainWindow::doSave(const QString &filename)
+{
+    QFile f(filename);
+    if(f.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        QTextStream out(&f);
+        center->currentSet()->accounts()->saveTo(out);
+        center->currentSet()->setFilename(filename);
+        updateCurrentSet();
+        center->updateCurrentFilename();
+    }
+     else
+    QMessageBox(QMessageBox::Critical,
+                tr("File error"),
+                tr("The output file %s could not be opened")
+                 .arg(filename),
+                QMessageBox::Ok).exec();
 }
 
 void MainWindow::filter()
@@ -188,6 +219,19 @@ void MainWindow::openRecentFile()
     QAction *action = qobject_cast<QAction *>(sender());
     if (action)
         addAccountSet(action->data().toString());
+}
+
+void MainWindow::save()
+{
+    if(center->currentSet()->filename().isEmpty())
+        saveAs();
+    doSave(center->currentSet()->filename());
+}
+
+void MainWindow::saveAs()
+{
+    QString filename = QFileDialog::getSaveFileName(this);
+    if(!filename.isEmpty()) doSave(filename);
 }
 
 void MainWindow::toClipboardActionTriggered()
@@ -223,6 +267,8 @@ void MainWindow::updateCurrentSet(int)
     lockAction->setIcon(locked?QIcon(":/img/locked.svg"):QIcon(":/img/unlocked.svg"));
     lockAction->setIconText(locked?tr("Locked"):tr("Unlocked"));
     lockAction->setEnabled(enabled);
+
+    fileWriteActions->setEnabled(enabled);
 
     toClipboardAction->setEnabled(!locked);
     viewActions->setEnabled(enabled);

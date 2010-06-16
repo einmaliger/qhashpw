@@ -34,6 +34,11 @@ MyTabWidget::MyTabWidget(QWidget *parent)
     setTabsClosable(true);
 }
 
+void MyTabWidget::addAccounts(AccountSetView *a)
+{
+    addTab(a, a->filename());
+}
+
 AccountSetView *MyTabWidget::currentSet() const
 {
     return currentIndex() == -1 ? 0 : qobject_cast<AccountSetView*>(currentWidget());
@@ -47,4 +52,11 @@ void MyTabWidget::tabInserted(int)
 void MyTabWidget::tabRemoved(int)
 {
     tabBar->setVisible(count() > 1);
+}
+
+void MyTabWidget::updateCurrentFilename()
+{
+    Q_ASSERT(currentSet() != 0);
+
+    setTabText(currentIndex(), currentSet()->filename());
 }

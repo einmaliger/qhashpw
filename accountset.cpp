@@ -48,8 +48,6 @@ bool AccountSet::readFrom(Tokenizer *t)
 {
     QString s;
 
-    filename_ = t->filename();
-
     all_.clear();
 
     bool noError = defaultAccount_.readFrom(t, 0);
@@ -87,4 +85,28 @@ bool AccountSet::readFrom(Tokenizer *t)
 int AccountSet::rowCount() const
 {
     return filtered_.count();
+}
+
+void AccountSet::saveTo(QTextStream &f)
+{
+    f << tr("# File created automatically by (TODO: Insert program and version number)\n")
+      << "\n"
+      << "# Default account\n";
+
+    defaultAccount_.saveTo(f, defaultAccount_.version());
+    f << "\n";
+
+    QString currentCat = "";
+
+    foreach(Account a, all_)
+    {
+        QString newCat = a.category();
+        if(newCat != currentCat && defaultAccount_.version() == 1)
+        {
+            f << "####################  " << newCat << "  ####################\n\n";
+            currentCat = newCat;
+        }
+        a.saveTo(f, defaultAccount_.version());
+        f << "\n";
+    }
 }

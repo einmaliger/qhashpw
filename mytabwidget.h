@@ -33,10 +33,17 @@ class MyTabWidget : public QTabWidget
 public:
     MyTabWidget(QWidget *parent = 0);
 
+    // Create a new tab that holds a
+    void addAccounts(AccountSetView *a);
+
     // Returns currently selected AccountSetView
     // or 0, if the current selection is not an AccountSetView
     // or there is no selection
     AccountSetView *currentSet() const;
+
+    // Update the filename (displayed in the tab title)
+    // of the currently selected set
+    void updateCurrentFilename();
 
 protected:
     void tabInserted(int index);

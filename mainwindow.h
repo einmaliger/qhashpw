@@ -48,15 +48,19 @@ private slots:
     void lockActionToggled(bool state);
     void open();
     void openRecentFile();
+    void save();
+    void saveAs();
     void toClipboardActionTriggered();
     void viewActionTriggered(QAction *);
     void updateCurrentSet(int unused = -1);
 
 private:
+    void doSave(const QString &filename);
     void updateRecentFileActions();
     MyTabWidget *center;
     QLineEdit *searchPhrase;
 
+    QActionGroup *fileWriteActions;
     QAction *lockAction;
     QList<QAction*> recentFileActions;
     QAction *toClipboardAction;

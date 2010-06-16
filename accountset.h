@@ -20,6 +20,8 @@
 #ifndef ACCOUNTSET_H
 #define ACCOUNTSET_H
 
+#include <QTextStream>
+
 #include "account.h"
 #include "tokenizer.h"
 
@@ -59,6 +61,9 @@ public:
     bool readFrom(Tokenizer *t);
 
     int rowCount() const;
+
+    void saveTo(QTextStream &f);
+
 private:
     DefaultAccount defaultAccount_;
 
@@ -66,7 +71,6 @@ private:
     QList<Account*> filtered_;
 
     QString errorMsg_;
-    QString filename_;
 
 signals:
     void filterChanged();

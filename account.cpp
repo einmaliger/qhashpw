@@ -370,11 +370,10 @@ void AccountSaver::rawWrite(const QString &key, const QString &value)
     if(!value.isNull())
     {
         if(!firstAssignment)
-        {
             out << ",\n";
-            firstAssignment = false;
-        }
-        out << "\t" << key << " = " << value;
+
+        out << "\t" << key << ": " << value;
+        firstAssignment = false;
     }
 }
 
@@ -392,7 +391,7 @@ void AccountSaver::writeString(int ver, const QString &key, const QString &value
     if(version < ver) return;
     if(value.isNull()) return;
 
-    bool needParen = !value[0].isLetter();
+    bool needParen = value.isEmpty() || !value[0].isLetter();
 
     if(!needParen)
     {

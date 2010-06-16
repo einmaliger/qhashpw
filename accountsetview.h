@@ -44,6 +44,8 @@ public:
     bool isLocked() { return isLocked_; }
     bool isListView();
     bool isTreeView();
+    void setFilename(const QString &n)
+    { filename_ = n; }
 
 public slots:
     void copyCurrentPassword() const;
