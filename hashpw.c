@@ -98,7 +98,8 @@ int getpw2(const struct PasswordOptions *opt, char *result)
 
 	// check for sane input values
         if(strlen(opt->mainPW) > MAX_INPUT_LENGTH ||
-           strlen(opt->descr) > MAX_INPUT_LENGTH)
+           strlen(opt->descr) > MAX_INPUT_LENGTH ||
+	   strlen(opt->salt) > MAX_INPUT_LENGTH)
 		return -1;
 
         if(opt->flags > PARAM_MAX_V2) return -2;
